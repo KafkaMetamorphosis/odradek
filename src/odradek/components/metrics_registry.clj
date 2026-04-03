@@ -67,5 +67,5 @@
 (defn scrape [metrics-registry]
   (let [formats (ExpositionFormats/init)
         baos    (ByteArrayOutputStream.)]
-    (.write (.getPrometheusTextFormatWriter formats) baos (.metricSnapshots (:registry metrics-registry)))
+    (.write (.getPrometheusTextFormatWriter formats) baos (.scrape (:registry metrics-registry)))
     (.toString baos "UTF-8")))
