@@ -1,0 +1,31 @@
+{:server          #profile {:default {:port #long #or [#env PORT 8082]}
+                            :test    {:port 0}}
+ :producer-engine {:rate-interval-ms #long #or [#env RATE_INTERVAL_MS 100]}
+ :kafka_clusters  #profile {:default {"local-1" {:bootstrap-url #or [#env KAFKA_BOOTSTRAP_URL "localhost:9092"]}}
+                            :test    {"test-cluster" {:bootstrap-url #or [#env KAFKA_BOOTSTRAP_URL "localhost:9092"]}}}
+ :observers       #profile {:default [{:name                "small-messages-small-topic"
+                                       :clusters            ["local-1"]
+                                       :topic               "SMALL-TOPIC"
+                                       :parallelism         1
+                                       :messages-per-bucket 10
+                                       :message-size-kb     100
+                                       :producer-config     {"acks"                "all"
+                                                             "linger.ms"           "0"
+                                                             "retries"             "3"
+                                                             "delivery.timeout.ms" "5000"
+                                                             "request.timeout.ms"  "1500"}
+                                       :consumer-config     {"max.poll.interval.ms" "30000"
+                                                             "heartbeat.interval.ms" "3000"
+                                                             "session.timeout.ms"    "30000"}}]
+                            :test    [{:name                "test-observer"
+                                       :clusters            ["test-cluster"]
+                                       :topic               "ODRADEK-TEST-TOPIC"
+                                       :parallelism         1
+                                       :messages-per-bucket 1
+                                       :message-size-kb     1
+                                       :producer-config     {"acks"                "all"
+                                                             "linger.ms"           "0"
+                                                             "retries"             "0"
+                                                             "delivery.timeout.ms" "5000"
+                                                             "request.timeout.ms"  "1500"}
+                                       :consumer-config     {}}]}}
