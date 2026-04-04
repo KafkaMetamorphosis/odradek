@@ -1,0 +1,81 @@
+{
+  "default": {
+    "server": {"port": 8082},
+    "producer-engine": {"rate-interval-ms": 100},
+    "topic-scraper": {"scrape-interval-ms": 30000},
+    "kafka_clusters": {
+      "local-1": {"bootstrap-url": "localhost:9092"}
+    },
+    "observers": [
+      {
+        "name": "small-messages-small-topic",
+        "clusters": ["local-1"],
+        "topic": "SMALL-TOPIC",
+        "parallelism": 1,
+        "messages-per-bucket": 10,
+        "message-size-kb": 10,
+        "producer-config": {
+          "acks": "all",
+          "linger.ms": "0",
+          "retries": "3",
+          "delivery.timeout.ms": "5000",
+          "request.timeout.ms": "1500"
+        },
+        "consumer-config": {
+          "max.poll.interval.ms": "30000",
+          "heartbeat.interval.ms": "3000",
+          "session.timeout.ms": "30000"
+        }
+      },
+      {
+        "name": "big-messages-small-topic",
+        "clusters": ["local-1"],
+        "topic": "SMALL-TOPIC",
+        "parallelism": 1,
+        "messages-per-bucket": 1,
+        "message-size-kb": 50,
+        "producer-config": {
+          "acks": "all",
+          "linger.ms": "0",
+          "retries": "3",
+          "delivery.timeout.ms": "30000",
+          "request.timeout.ms": "10000",
+          "max.request.size": "10485760"
+        },
+        "consumer-config": {
+          "max.poll.interval.ms": "30000",
+          "heartbeat.interval.ms": "3000",
+          "session.timeout.ms": "30000",
+          "fetch.max.bytes": "10485760",
+          "max.partition.fetch.bytes": "10485760"
+        }
+      }
+    ]
+  },
+  "test": {
+    "server": {"port": 0},
+    "producer-engine": {"rate-interval-ms": 100},
+    "topic-scraper": {"scrape-interval-ms": 5000},
+    "kafka_clusters": {
+      "test-cluster": {"bootstrap-url": "localhost:9092"}
+    },
+    "observers": [
+      {
+        "name": "test-observer",
+        "clusters": ["test-cluster"],
+        "topic": "ODRADEK-TEST-TOPIC",
+        "parallelism": 1,
+        "messages-per-bucket": 1,
+        "message-size-kb": 1,
+        "producer-config": {
+          "acks": "all",
+          "linger.ms": "0",
+          "retries": "0",
+          "delivery.timeout.ms": "5000",
+          "request.timeout.ms": "1500"
+        },
+        "consumer-config": {}
+      }
+    ]
+  }
+}

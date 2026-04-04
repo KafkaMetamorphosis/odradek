@@ -6,7 +6,6 @@
                  [ring/ring-jetty-adapter "1.12.2"]
                  [ring/ring-json "0.5.1"]
                  [compojure "1.7.1"]
-                 [aero "1.1.6"]
                  [cheshire "5.13.0"]
                  [org.apache.kafka/kafka-clients "3.7.0"]
                  [io.prometheus/prometheus-metrics-core "1.3.1"]
