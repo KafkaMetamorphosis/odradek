@@ -1,4 +1,7 @@
-(ns odradek.logic.topic-config)
+(ns odradek.logic.topic-config
+  (:require [clojure.string :as string]))
+
+
 
 (defn cluster-topic-pairs
   "Given the observers vector from config, returns a deduplicated sequence
@@ -9,11 +12,42 @@
           cluster-name (:clusters observer)]
       [cluster-name (:topic observer)])))
 
+(defn build-partitions-broker-ids [topic-description]
+  (string/join ";" (reduce (fn [acc partition]
+                          (conj acc (str (.partition partition) ":" 
+                                         (string/join "," (map #(.id %) (.replicas partition))))))
+                        []
+                        (.partitions topic-description))))
+
+(defn- build-partitions-irs-broker-ids [topic-description]
+  (string/join ";" (reduce (fn [acc partition]
+                             (conj acc (str (.partition partition) ":"
+                                            (string/join "," (map #(.id %) (.isr partition))))))
+                           []
+                           (.partitions topic-description))))
+
+(defn- build-partitions-leader-broker-id [topic-description]
+  (string/join ";" (reduce (fn [acc partition]
+                             (conj acc (str (.partition partition) ":" (or (-> partition .leader .id) "none"))))
+                           []
+                           (.partitions topic-description))))
+
+(defn- build-partitions-replicas-racks [topic-description]
+  (string/join ";" (reduce (fn [acc partition]
+                             (conj acc (str (.partition partition) ":"
+                                            (string/join "," (map (fn [r] (or (.rack r) "none")) (.replicas partition))))))
+                           []
+                           (.partitions topic-description))))
+
 (defn topic-description->label-map
   "Extracts partitions and replication_factor from a TopicDescription Java object."
   [topic-description]
   {:partitions         (str (.size (.partitions topic-description)))
-   :replication_factor (str (.size (.replicas (first (.partitions topic-description)))))})
+   :replication_factor (str (.size (.replicas (first (.partitions topic-description)))))
+   :partitions_replicas_broker_ids (build-partitions-broker-ids topic-description)
+   :partitions_isr_broker_ids (build-partitions-irs-broker-ids topic-description)
+   :partitions_leader_broker_ids (build-partitions-leader-broker-id topic-description)
+   :partitions_replicas_broker_racks (build-partitions-replicas-racks topic-description)})
 
 (defn config->label-map
   "Extracts topic configuration values from a Kafka Config Java object.

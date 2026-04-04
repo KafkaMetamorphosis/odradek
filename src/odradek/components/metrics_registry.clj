@@ -10,6 +10,8 @@
 
 (def ^:private topic-config-label-names
   (into-array String ["cluster_name" "topic" "partitions" "replication_factor"
+                      "partitions_replicas_broker_ids" "partitions_isr_broker_ids"
+                      "partitions_leader_broker_ids" "partitions_replicas_broker_racks"
                       "min_insync_replicas" "retention_ms" "retention_bytes"
                       "cleanup_policy" "max_message_bytes" "compression_type"]))
 
@@ -95,11 +97,20 @@
 (defn set-topic-config! [metrics-registry label-map]
   (-> (get (:metrics metrics-registry) :topic-config-info)
       (.labelValues (into-array String
-                     (map str [(:cluster_name label-map) (:topic label-map)
-                               (:partitions label-map) (:replication_factor label-map)
-                               (:min_insync_replicas label-map) (:retention_ms label-map)
-                               (:retention_bytes label-map) (:cleanup_policy label-map)
-                               (:max_message_bytes label-map) (:compression_type label-map)])))
+                     (map str [(:cluster_name label-map)
+                               (:topic label-map)
+                               (:partitions label-map)
+                               (:replication_factor label-map)
+                               (:partitions_replicas_broker_ids label-map)
+                               (:partitions_isr_broker_ids label-map)
+                               (:partitions_leader_broker_ids label-map)
+                               (:partitions_replicas_broker_racks label-map)
+                               (:min_insync_replicas label-map)
+                               (:retention_ms label-map)
+                               (:retention_bytes label-map)
+                               (:cleanup_policy label-map)
+                               (:max_message_bytes label-map)
+                               (:compression_type label-map)])))
       (.set 1.0)))
 
 (defn clear-topic-config! [metrics-registry]
