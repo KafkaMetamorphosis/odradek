@@ -80,91 +80,523 @@
       "panels": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "type": "table",
-          "title": "Topic Configuration",
-          "description": "Current configuration for all observed topics",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 1 },
+          "type": "stat",
+          "title": "Partitions",
+          "description": "Number of partitions for observed topics",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
           "id": 1,
           "fieldConfig": {
             "defaults": {
-              "custom": {
-                "align": "auto",
-                "cellOptions": { "type": "auto" },
-                "filterable": true,
-                "inspect": false
-              }
+              "unit": "short",
+              "color": { "mode": "value" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null }
+                ]
+              },
+              "mappings": []
             },
-            "overrides": [
-              {
-                "matcher": { "id": "byName", "options": "Value" },
-                "properties": [
-                  { "id": "custom.hidden", "value": true }
-                ]
-              },
-              {
-                "matcher": { "id": "byName", "options": "Time" },
-                "properties": [
-                  { "id": "custom.hidden", "value": true }
-                ]
-              },
-              {
-                "matcher": { "id": "byName", "options": "__name__" },
-                "properties": [
-                  { "id": "custom.hidden", "value": true }
-                ]
-              },
-              {
-                "matcher": { "id": "byName", "options": "instance" },
-                "properties": [
-                  { "id": "custom.hidden", "value": true }
-                ]
-              },
-              {
-                "matcher": { "id": "byName", "options": "job" },
-                "properties": [
-                  { "id": "custom.hidden", "value": true }
-                ]
-              },
-              {
-                "matcher": { "id": "byName", "options": "retention_bytes" },
-                "properties": [
-                  { "id": "custom.hidden", "value": true }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "options": {
-            "showHeader": true,
-            "sortBy": [
-              { "displayName": "topic", "desc": false }
-            ],
-            "cellHeight": "sm",
-            "footer": { "show": false }
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
           },
           "targets": [
             {
               "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
-              "legendFormat": "",
+              "legendFormat": "{{topic}}",
               "refId": "A",
-              "instant": true,
-              "format": "table"
+              "instant": true
             }
           ],
           "transformations": [
             {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
               "id": "organize",
               "options": {
-                "excludeByName": {},
-                "indexByName": {
-                  "topic": 0,
-                  "cluster_name": 1,
-                  "partitions": 2,
-                  "replication_factor": 3,
-                  "min_insync_replicas": 4,
-                  "retention_ms": 5,
-                  "cleanup_policy": 6,
-                  "max_message_bytes": 7,
-                  "compression_type": 8
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "replication_factor": true,
+                  "min_insync_replicas": true,
+                  "retention_ms": true,
+                  "retention_bytes": true,
+                  "cleanup_policy": true,
+                  "max_message_bytes": true,
+                  "compression_type": true
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "stat",
+          "title": "Replication Factor",
+          "description": "Replication factor for observed topics",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+          "id": 2,
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "red", "value": 1 },
+                  { "color": "yellow", "value": 2 },
+                  { "color": "green", "value": 3 }
+                ]
+              },
+              "mappings": []
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "background",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "{{topic}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "partitions": true,
+                  "min_insync_replicas": true,
+                  "retention_ms": true,
+                  "retention_bytes": true,
+                  "cleanup_policy": true,
+                  "max_message_bytes": true,
+                  "compression_type": true
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "stat",
+          "title": "Min In-Sync Replicas",
+          "description": "Minimum in-sync replicas for observed topics",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+          "id": 3,
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "red", "value": 1 },
+                  { "color": "green", "value": 2 }
+                ]
+              },
+              "mappings": []
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "background",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "{{topic}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "partitions": true,
+                  "replication_factor": true,
+                  "retention_ms": true,
+                  "retention_bytes": true,
+                  "cleanup_policy": true,
+                  "max_message_bytes": true,
+                  "compression_type": true
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "stat",
+          "title": "Retention",
+          "description": "Retention duration for observed topics",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+          "id": 4,
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ms",
+              "color": { "mode": "fixed", "fixedColor": "text" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "text", "value": null }
+                ]
+              },
+              "mappings": []
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "{{topic}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "partitions": true,
+                  "replication_factor": true,
+                  "min_insync_replicas": true,
+                  "retention_bytes": true,
+                  "cleanup_policy": true,
+                  "max_message_bytes": true,
+                  "compression_type": true
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "stat",
+          "title": "Retention Bytes",
+          "description": "Retention size limit for observed topics (-1 means unlimited)",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 5 },
+          "id": 5,
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "color": { "mode": "fixed", "fixedColor": "text" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "text", "value": null }
+                ]
+              },
+              "mappings": []
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "{{topic}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "partitions": true,
+                  "replication_factor": true,
+                  "min_insync_replicas": true,
+                  "retention_ms": true,
+                  "cleanup_policy": true,
+                  "max_message_bytes": true,
+                  "compression_type": true
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "stat",
+          "title": "Cleanup Policy",
+          "description": "Cleanup policy for observed topics",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 5 },
+          "id": 6,
+          "fieldConfig": {
+            "defaults": {
+              "unit": "string",
+              "color": { "mode": "fixed", "fixedColor": "text" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "text", "value": null }
+                ]
+              },
+              "mappings": []
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "{{topic}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "partitions": true,
+                  "replication_factor": true,
+                  "min_insync_replicas": true,
+                  "retention_ms": true,
+                  "retention_bytes": true,
+                  "max_message_bytes": true,
+                  "compression_type": true
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "stat",
+          "title": "Max Message Size",
+          "description": "Maximum message size in bytes for observed topics",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 5 },
+          "id": 7,
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "color": { "mode": "fixed", "fixedColor": "text" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "text", "value": null }
+                ]
+              },
+              "mappings": []
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "{{topic}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "partitions": true,
+                  "replication_factor": true,
+                  "min_insync_replicas": true,
+                  "retention_ms": true,
+                  "retention_bytes": true,
+                  "cleanup_policy": true,
+                  "compression_type": true
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "stat",
+          "title": "Compression",
+          "description": "Compression type for observed topics",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 5 },
+          "id": 8,
+          "fieldConfig": {
+            "defaults": {
+              "unit": "string",
+              "color": { "mode": "fixed", "fixedColor": "text" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "text", "value": null }
+                ]
+              },
+              "mappings": []
+            },
+            "overrides": []
+          },
+          "options": {
+            "graphMode": "none",
+            "colorMode": "value",
+            "textMode": "value_and_name",
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "orientation": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "{{topic}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": { "mode": "value" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "instance": true,
+                  "job": true,
+                  "cluster_name": true,
+                  "topic": true,
+                  "partitions": true,
+                  "replication_factor": true,
+                  "min_insync_replicas": true,
+                  "retention_ms": true,
+                  "retention_bytes": true,
+                  "cleanup_policy": true,
+                  "max_message_bytes": true
                 },
                 "renameByName": {}
               }
