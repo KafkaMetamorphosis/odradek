@@ -1,6 +1,8 @@
 {:server          #profile {:default {:port #long #or [#env PORT 8082]}
                             :test    {:port 0}}
  :producer-engine {:rate-interval-ms #long #or [#env RATE_INTERVAL_MS 100]}
+ :topic-scraper   #profile {:default {:scrape-interval-ms #long #or [#env TOPIC_SCRAPE_INTERVAL_MS 30000]}
+                             :test    {:scrape-interval-ms 5000}}
  :kafka_clusters  #profile {:default {"local-1" {:bootstrap-url #or [#env KAFKA_BOOTSTRAP_URL "localhost:9092"]}}
                             :test    {"test-cluster" {:bootstrap-url #or [#env KAFKA_BOOTSTRAP_URL "localhost:9092"]}}}
  :observers       #profile {:default [{:name                "small-messages-small-topic"

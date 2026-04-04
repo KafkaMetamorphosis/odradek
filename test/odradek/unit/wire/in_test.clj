@@ -12,7 +12,8 @@
                       :producer-config     {"acks" "all"}
                       :consumer-config     {}}]
    :kafka_clusters  {"cluster-a" {:bootstrap-url "localhost:9092"}}
-   :producer-engine {:rate-interval-ms 100}})
+   :producer-engine {:rate-interval-ms 100}
+   :topic-scraper   {:scrape-interval-ms 30000}})
 
 (deftest parse-config-valid
   (testing "valid config passes without throwing"

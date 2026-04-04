@@ -20,10 +20,14 @@
 (def ProducerEngine
   {:rate-interval-ms s/Int})
 
+(def TopicScraper
+  {:scrape-interval-ms s/Int})
+
 (def Config
   {:observers       [Observer]
    :kafka_clusters  {s/Str KafkaCluster}
-   :producer-engine ProducerEngine})
+   :producer-engine ProducerEngine
+   :topic-scraper   TopicScraper})
 
 (defn- validate-cluster-references [config]
   (let [known-clusters (set (keys (:kafka_clusters config)))]
