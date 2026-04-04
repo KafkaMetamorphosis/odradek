@@ -30,7 +30,7 @@
       {
         "name": "big-messages-small-topic",
         "clusters": ["local-1"],
-        "topic": "SMALL-TOPIC",
+        "topic": "BIG-MESSAGES-SMALL-TOPIC",
         "parallelism": 1,
         "messages-per-bucket": 1,
         "message-size-kb": 50,
