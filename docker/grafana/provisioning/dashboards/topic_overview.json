@@ -1,0 +1,511 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["kafka", "odradek", "topic"],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": ["All"],
+          "value": ["$__all"]
+        },
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "definition": "label_values(kafka_odradek_topic_config, cluster_name)",
+        "hide": 0,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "name": "cluster_name",
+        "label": "Cluster",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kafka_odradek_topic_config, cluster_name)"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": ["All"],
+          "value": ["$__all"]
+        },
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "definition": "label_values(kafka_odradek_topic_config{cluster_name=~\"$cluster_name\"}, topic)",
+        "hide": 0,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "name": "topic",
+        "label": "Topic",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kafka_odradek_topic_config{cluster_name=~\"$cluster_name\"}, topic)"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Odradek \u2014 Topic Overview",
+  "uid": "odradek-topic-overview",
+  "version": 1,
+  "style": "dark",
+  "panels": [
+    {
+      "type": "row",
+      "title": "Topic Configuration",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "collapsed": true,
+      "panels": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "table",
+          "title": "Topic Configuration",
+          "description": "Current configuration for all observed topics",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 1 },
+          "id": 1,
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "cellOptions": { "type": "auto" },
+                "filterable": true,
+                "inspect": false
+              }
+            },
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "Value" },
+                "properties": [
+                  { "id": "custom.hidden", "value": true }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "Time" },
+                "properties": [
+                  { "id": "custom.hidden", "value": true }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "__name__" },
+                "properties": [
+                  { "id": "custom.hidden", "value": true }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "instance" },
+                "properties": [
+                  { "id": "custom.hidden", "value": true }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "job" },
+                "properties": [
+                  { "id": "custom.hidden", "value": true }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "retention_bytes" },
+                "properties": [
+                  { "id": "custom.hidden", "value": true }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "sortBy": [
+              { "displayName": "topic", "desc": false }
+            ],
+            "cellHeight": "sm",
+            "footer": { "show": false }
+          },
+          "targets": [
+            {
+              "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+              "legendFormat": "",
+              "refId": "A",
+              "instant": true,
+              "format": "table"
+            }
+          ],
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {
+                  "topic": 0,
+                  "cluster_name": 1,
+                  "partitions": 2,
+                  "replication_factor": 3,
+                  "min_insync_replicas": 4,
+                  "retention_ms": 5,
+                  "cleanup_policy": 6,
+                  "max_message_bytes": 7,
+                  "compression_type": 8
+                },
+                "renameByName": {}
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Latency by Topic",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 1 },
+      "id": 101,
+      "collapsed": true,
+      "panels": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "timeseries",
+          "title": "p99 Production Latency by Topic",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 2 },
+          "id": 10,
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisLabel": "latency",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "scheme",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "unit": "ms",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "transparent", "value": null },
+                  { "color": "red", "value": 10 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, sum by (le, topic) (rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[1m])))",
+              "legendFormat": "{{topic}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "timeseries",
+          "title": "p99 Message Age (e2e pre-commit) by Topic",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 2 },
+          "id": 11,
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisLabel": "latency",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "scheme",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "unit": "ms",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "transparent", "value": null },
+                  { "color": "red", "value": 80 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, sum by (le, topic) (rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[1m])))",
+              "legendFormat": "{{topic}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "timeseries",
+          "title": "p99 Full E2E Latency by Topic",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 2 },
+          "id": 12,
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisLabel": "latency",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "scheme",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "line" }
+              },
+              "unit": "ms",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "transparent", "value": null },
+                  { "color": "red", "value": 80 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, sum by (le, topic) (rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[1m])))",
+              "legendFormat": "{{topic}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Throughput by Topic",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 2 },
+      "id": 102,
+      "collapsed": true,
+      "panels": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "timeseries",
+          "title": "Messages Produced/s by Topic",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 3 },
+          "id": 20,
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "scheme",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" }
+              },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "sum by (topic) (rate(kafka_odradek_messages_produced_total{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[1m]))",
+              "legendFormat": "{{topic}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "timeseries",
+          "title": "Messages Fetched/s by Topic",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 3 },
+          "id": 21,
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "scheme",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" }
+              },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "sum by (topic) (rate(kafka_odradek_messages_fetched_total{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[1m]))",
+              "legendFormat": "{{topic}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Error Rate by Topic",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 3 },
+      "id": 103,
+      "collapsed": true,
+      "panels": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "timeseries",
+          "title": "Production Error Rate by Topic",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "id": 30,
+          "fieldConfig": {
+            "defaults": {
+              "color": { "fixedColor": "red", "mode": "fixed" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisLabel": "errors/sec",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "scheme",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" }
+              },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "sum by (topic) (rate(kafka_odradek_messages_production_error_total{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[1m]))",
+              "legendFormat": "{{topic}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "type": "timeseries",
+          "title": "Fetch Error Rate by Topic",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "id": 31,
+          "fieldConfig": {
+            "defaults": {
+              "color": { "fixedColor": "red", "mode": "fixed" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisLabel": "errors/sec",
+                "axisPlacement": "auto",
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "scheme",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" }
+              },
+              "unit": "ops"
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "sum by (topic) (rate(kafka_odradek_messages_fetch_error_total{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[1m]))",
+              "legendFormat": "{{topic}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
