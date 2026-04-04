@@ -31,15 +31,9 @@
    :kafka_clusters  (keywordize-cluster-config (get raw "kafka_clusters"))
    :observers       (mapv keywordize-observer (get raw "observers"))})
 
-(defn- read-json-config [profile]
-  (let [raw       (slurp (io/resource "config.json"))
-        profiles  (json/parse-string raw)
-        base      (get profiles (name profile))]
-    (when-not base
-      (throw (ex-info (str "Unknown config profile: " profile)
-                      {:profile profile
-                       :available (keys profiles)})))
-    (keywordize-config base)))
+(defn- read-json-config []
+  (let [raw (slurp (io/resource "config.json"))]
+    (keywordize-config (json/parse-string raw))))
 
 (defn- apply-env-overrides [config]
   (let [env-port               (System/getenv "PORT")
@@ -64,13 +58,21 @@
       env-scrape-interval
       (assoc-in [:topic-scraper :scrape-interval-ms] (Long/parseLong env-scrape-interval)))))
 
-(defrecord ConfigComponent [profile config]
+(defrecord ConfigComponent [config]
   component/Lifecycle
   (start [this]
-    (let [config (-> (read-json-config profile)
-                     apply-env-overrides)]
-      (assoc this :config config)))
+    (let [loaded-config (-> (read-json-config)
+                            apply-env-overrides)]
+      (assoc this :config loaded-config)))
   (stop [this] this))
 
-(defn new-config-component [profile]
-  (map->ConfigComponent {:profile profile}))
+(defrecord StubConfigComponent [config]
+  component/Lifecycle
+  (start [this] this)
+  (stop [this] this))
+
+(defn new-config-component []
+  (map->ConfigComponent {}))
+
+(defn new-stub-config-component [config-map]
+  (map->StubConfigComponent {:config config-map}))
