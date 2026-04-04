@@ -16,6 +16,20 @@
                                                              "request.timeout.ms"  "1500"}
                                        :consumer-config     {"max.poll.interval.ms" "30000"
                                                              "heartbeat.interval.ms" "3000"
+                                                             "session.timeout.ms"    "30000"}}
+                                      {:name                "big-messages-small-topic"
+                                       :clusters            ["local-1"]
+                                       :topic               "SMALL-TOPIC"
+                                       :parallelism         1
+                                       :messages-per-bucket 1
+                                       :message-size-kb     9216
+                                       :producer-config     {"acks"                "all"
+                                                             "linger.ms"           "0"
+                                                             "retries"             "3"
+                                                             "delivery.timeout.ms" "30000"
+                                                             "request.timeout.ms"  "10000"}
+                                       :consumer-config     {"max.poll.interval.ms" "30000"
+                                                             "heartbeat.interval.ms" "3000"
                                                              "session.timeout.ms"    "30000"}}]
                             :test    [{:name                "test-observer"
                                        :clusters            ["test-cluster"]
