@@ -8,7 +8,7 @@
                                        :topic               "SMALL-TOPIC"
                                        :parallelism         1
                                        :messages-per-bucket 10
-                                       :message-size-kb     100
+                                       :message-size-kb     10
                                        :producer-config     {"acks"                "all"
                                                              "linger.ms"           "0"
                                                              "retries"             "3"
@@ -22,7 +22,7 @@
                                        :topic               "SMALL-TOPIC"
                                        :parallelism         1
                                        :messages-per-bucket 1
-                                       :message-size-kb     9216
+                                       :message-size-kb     50
                                        :producer-config     {"acks"                "all"
                                                              "linger.ms"           "0"
                                                              "retries"             "3"
