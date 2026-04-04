@@ -54,6 +54,19 @@
               (:message_size_kb label-values-map)
               (:configured_rate_interval label-values-map)])))
 
+(defn init-error-labels
+  "Initializes error counters to 0 for the given label set.
+   Ensures they appear in scrape output even when no errors have occurred,
+   so Grafana shows 0 instead of 'no data'."
+  [metrics-registry labels]
+  (let [label-arr (label-values-array labels)]
+    (-> (get (:metrics metrics-registry) :production-error-total)
+        (.labelValues label-arr)
+        (.inc 0.0))
+    (-> (get (:metrics metrics-registry) :fetch-error-total)
+        (.labelValues label-arr)
+        (.inc 0.0))))
+
 (defn inc-counter [metrics-registry metric-key label-values-map]
   (-> (get (:metrics metrics-registry) metric-key)
       (.labelValues (label-values-array label-values-map))

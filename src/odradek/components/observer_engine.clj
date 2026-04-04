@@ -99,15 +99,28 @@
                       0)))
                 (doseq [record records]
                   (let [pre-commit-time  (System/currentTimeMillis)
-                        produced-at      (observer/decode-produced-at-header record)]
+                        produced-at      (observer/decode-produced-at-header record)
+                        message-age-ms   (when produced-at (- pre-commit-time produced-at))]
                     (when produced-at
-                      (metrics/observe-histogram metrics-registry :e2e-message-age labels
-                        (- pre-commit-time produced-at)))
+                      (log/debug "Consumer pre-commit"
+                        {:observer      (:observer labels)
+                         :cluster       (:cluster_name labels)
+                         :produced-at   produced-at
+                         :fetch-time    pre-commit-time
+                         :message-age-ms message-age-ms})
+                      (metrics/observe-histogram metrics-registry :e2e-message-age labels message-age-ms))
                     (metrics/inc-counter metrics-registry :fetched-total labels)
                     (.commitSync consumer)
                     (when produced-at
-                      (metrics/observe-histogram metrics-registry :full-e2e labels
-                        (- (System/currentTimeMillis) produced-at)))))
+                      (let [committed-at  (System/currentTimeMillis)
+                            full-e2e-ms   (- committed-at produced-at)]
+                        (log/debug "Consumer post-commit"
+                          {:observer     (:observer labels)
+                           :cluster      (:cluster_name labels)
+                           :produced-at  produced-at
+                           :committed-at committed-at
+                           :full-e2e-ms  full-e2e-ms})
+                        (metrics/observe-histogram metrics-registry :full-e2e labels full-e2e-ms)))))
                 (set-status! observer-statuses status-key :running)
                 true)
               (catch WakeupException _
@@ -195,6 +208,7 @@
               cons-status-key [(:name observer) cluster-name :consumer]]
           (set-status! obs-statuses prod-status-key :starting)
           (set-status! obs-statuses cons-status-key :starting)
+          (metrics/init-error-labels metrics-registry labels)
           (swap! all-channels assoc pair-key produce-ch)
           (swap! all-producers assoc pair-key producer)
           (swap! all-consumers assoc pair-key consumer)
