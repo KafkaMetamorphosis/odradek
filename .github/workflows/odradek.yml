@@ -59,7 +59,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2-
 
       - name: Wait for Kafka
-        run: timeout 60 bash -c 'until nc -z kafka 9092; do sleep 1; done'
+        run: timeout 60 bash -c 'until echo > /dev/tcp/kafka/9092; do sleep 1; done' 2>/dev/null
 
       - name: Run integration tests
         run: lein test :odradek.integration
