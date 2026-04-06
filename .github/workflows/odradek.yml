@@ -24,6 +24,12 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('project.clj') }}
           restore-keys: ${{ runner.os }}-m2-
 
+      - name: Install Leiningen
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o /usr/local/bin/lein
+          chmod +x /usr/local/bin/lein
+          lein version
+
       - name: Run unit tests
         run: lein test :odradek.unit
 
@@ -63,6 +69,12 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('project.clj') }}
           restore-keys: ${{ runner.os }}-m2-
+
+      - name: Install Leiningen
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o /usr/local/bin/lein
+          chmod +x /usr/local/bin/lein
+          lein version
 
       - name: Wait for Kafka
         run: timeout 60 bash -c 'until nc -z localhost 9092; do sleep 1; done'
