@@ -1,4 +1,4 @@
-(ns odradek.components.metrics-registry
+(ns odradek.metrics.registry
   (:require [com.stuartsierra.component :as component])
   (:import [io.prometheus.metrics.core.metrics Counter Gauge Histogram]
            [io.prometheus.metrics.model.registry PrometheusRegistry]
@@ -71,15 +71,22 @@
               (:message_size_kb label-values-map)
               (:configured_rate_interval label-values-map)])))
 
-(defn init-error-labels
-  "Initializes error counters to 0 for the given label set.
-   Ensures they appear in scrape output even when no errors have occurred,
+(defn init-production-error-labels
+  "Initializes the production error counter to 0 for the given label set.
+   Ensures it appears in scrape output even when no errors have occurred,
    so Grafana shows 0 instead of 'no data'."
   [metrics-registry labels]
   (let [label-arr (label-values-array labels)]
     (-> (get (:metrics metrics-registry) :production-error-total)
         (.labelValues label-arr)
-        (.inc 0.0))
+        (.inc 0.0))))
+
+(defn init-fetch-error-labels
+  "Initializes the fetch error counter to 0 for the given label set.
+   Ensures it appears in scrape output even when no errors have occurred,
+   so Grafana shows 0 instead of 'no data'."
+  [metrics-registry labels]
+  (let [label-arr (label-values-array labels)]
     (-> (get (:metrics metrics-registry) :fetch-error-total)
         (.labelValues label-arr)
         (.inc 0.0))))

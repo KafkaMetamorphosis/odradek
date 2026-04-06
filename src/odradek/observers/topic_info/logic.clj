@@ -1,16 +1,6 @@
-(ns odradek.logic.topic-config
+(ns odradek.observers.topic-info.logic
   (:require [clojure.string :as string]))
 
-
-
-(defn cluster-topic-pairs
-  "Given the observers vector from config, returns a deduplicated sequence
-   of [cluster-name topic] pairs."
-  [observers]
-  (distinct
-    (for [observer observers
-          cluster-name (:clusters observer)]
-      [cluster-name (:topic observer)])))
 
 (defn build-partitions-broker-ids [topic-description]
   (string/join ";" (reduce (fn [acc partition]

@@ -1,13 +1,13 @@
-(ns odradek.components.http-server
+(ns odradek.http.server
   (:require [ring.adapter.jetty :as jetty]
             [com.stuartsierra.component :as component]
             [clojure.tools.logging :as log]))
 
-(defrecord HttpServerComponent [config api server]
+(defrecord HttpServerComponent [config router server]
   component/Lifecycle
   (start [this]
     (let [port (get-in config [:config :server :port])
-          handler (:handler api)
+          handler (:handler router)
           server (jetty/run-jetty handler {:port port :join? false})]
       (log/infof "HTTP server started on port %d" port)
       (assoc this :server server)))

@@ -1,6 +1,12 @@
 (ns odradek.ops.handlers
-  (:require [clojure.walk]
+  (:require [cheshire.core :as json]
+            [clojure.walk]
             [odradek.ops.health :as health]))
+
+(defn- json-response [status body]
+  {:status  status
+   :headers {"Content-Type" "application/json"}
+   :body    (json/generate-string body)})
 
 (defn- redact-config [config]
   (clojure.walk/postwalk
@@ -16,17 +22,16 @@
 (defn health-handler [{:keys [observer-statuses]} _request]
   (let [statuses (if observer-statuses @observer-statuses {})
         result   (health/run-checks statuses)]
-    {:status (if (= :healthy (:status result)) 200 503)
-     :body   result}))
+    (json-response (if (= :healthy (:status result)) 200 503) result)))
 
 (defn liveness-handler [_components _request]
-  {:status 200 :body {:status "alive"}})
+  (json-response 200 {:status "alive"}))
 
 (defn readiness-handler [{:keys [observer-statuses]} _request]
   (let [statuses (if observer-statuses @observer-statuses {})]
     (if (health/ready? statuses)
-      {:status 200 :body {:status "ready"}}
-      {:status 503 :body {:status "not ready"}})))
+      (json-response 200 {:status "ready"})
+      (json-response 503 {:status "not ready"}))))
 
 (defn config-dump-handler [{:keys [config]} _request]
-  {:status 200 :body (redact-config config)})
+  (json-response 200 (redact-config config)))

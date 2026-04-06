@@ -1,5 +1,5 @@
 (ns odradek.clients.kafka
-  (:require [odradek.logic.observer :as observer])
+  (:require [clojure.string :as str])
   (:import [org.apache.kafka.clients.producer KafkaProducer]
            [org.apache.kafka.clients.consumer KafkaConsumer]
            [org.apache.kafka.common.serialization
@@ -10,6 +10,8 @@
     (doseq [[k v] m]
       (.setProperty props (str k) (str v)))
     props))
+
+;; change this, is coupled to log/config but should ge agnostic
 
 (defn new-producer
   "Constructs a KafkaProducer with ByteArraySerializer.
@@ -25,8 +27,8 @@
   "Constructs a KafkaConsumer with ByteArrayDeserializer.
    Fixed: auto.offset.reset=latest, enable.auto.commit=false, max.poll.records=1.
    group.id derived from observer-name unless overridden in consumer-config."
-  [bootstrap-url consumer-config observer-name]
-  (let [group-id (observer/observer-group-id observer-name consumer-config)
+  [bootstrap-url consumer-config observer-name] 
+  (let [group-id (str/upper-case (or (get consumer-config "group.id") observer-name))
         config   (merge consumer-config
                         {"bootstrap.servers"  bootstrap-url
                          "key.deserializer"   (.getName ByteArrayDeserializer)

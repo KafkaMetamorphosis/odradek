@@ -1,24 +1,50 @@
 {
   "server": {"port": 8082},
-  "producer-engine": {"rate-interval-ms": 100},
-  "topic-scraper": {"scrape-interval-ms": 30000},
+  "orchestrator-config": {
+    "rate-interval-ms": 100,
+    "scrape-interval-ms": 30000
+  },
   "kafka_clusters": {
     "local-1": {"bootstrap-url": "localhost:9092"}
   },
   "observers": [
     {
-      "name": "small-messages-small-topic",
+      "name": "topic-config",
+      "clusters": ["local-1"],
+      "observer-type": "topic-info"
+    },
+    {
+      "name": "small-messages-small-topic-producer",
       "clusters": ["local-1"],
       "topic": "SMALL-TOPIC",
-      "parallelism": 1,
-      "messages-per-bucket": 10,
-      "message-size-kb": 10,
+      "observer-type": "producer",
+      "custom-labels": {
+        "slo-latency-ms": 20,
+        "slo-latency-meta-ms": 99.5,
+        "slo-latency-window-minutes": 1
+      },
+      "volume-config": {
+        "parallelism": 1,
+        "messages-per-interval": 10,
+        "message-size-kb": 10
+      },
       "producer-config": {
         "acks": "all",
         "linger.ms": "0",
         "retries": "3",
         "delivery.timeout.ms": "5000",
         "request.timeout.ms": "1500"
+      }
+    },
+    {
+      "name": "small-messages-small-topic-consumer",
+      "clusters": ["local-1"],
+      "topic": "SMALL-TOPIC",
+      "observer-type": "consumer",
+      "custom-labels": {
+        "slo-latency-ms": 20,
+        "slo-latency-meta-ms": 99.5,
+        "slo-latency-window-minutes": 1
       },
       "consumer-config": {
         "max.poll.interval.ms": "30000",
@@ -27,12 +53,20 @@
       }
     },
     {
-      "name": "1mb-messages-small-topic",
+      "name": "1mb-messages-small-topic-producer",
       "clusters": ["local-1"],
       "topic": "1MB-MESSAGES-SMALL-TOPIC",
-      "parallelism": 1,
-      "messages-per-bucket": 1,
-      "message-size-kb": 1024,
+      "observer-type": "producer",
+      "volume-config": {
+        "parallelism": 1,
+        "messages-per-interval": 3,
+        "message-size-kb": 1024
+      },
+      "custom-labels": {
+        "slo-latency-ms": 80,
+        "slo-latency-meta-ms": 99,
+        "slo-latency-window-minutes": 5
+      },
       "producer-config": {
         "acks": "all",
         "linger.ms": "0",
@@ -40,6 +74,17 @@
         "delivery.timeout.ms": "30000",
         "request.timeout.ms": "10000",
         "max.request.size": "10485760"
+      }
+    },
+    {
+      "name": "1mb-messages-small-topic-consumer",
+      "clusters": ["local-1"],
+      "topic": "1MB-MESSAGES-SMALL-TOPIC",
+      "observer-type": "consumer",
+      "custom-labels": {
+        "slo-latency-ms": 80,
+        "slo-latency-meta-ms": 99,
+        "slo-latency-window-minutes": 5
       },
       "consumer-config": {
         "max.poll.interval.ms": "30000",
@@ -50,12 +95,20 @@
       }
     },
     {
-      "name": "5mb-messages-small-topic",
+      "name": "5mb-messages-small-topic-producer",
       "clusters": ["local-1"],
       "topic": "5MB-MESSAGES-SMALL-TOPIC",
-      "parallelism": 1,
-      "messages-per-bucket": 1,
-      "message-size-kb": 5120,
+      "observer-type": "producer",
+      "volume-config": {
+        "parallelism": 1,
+        "messages-per-interval": 2,
+        "message-size-kb": 5120
+      },
+      "custom-labels": {
+        "slo-latency-ms": 200,
+        "slo-latency-meta-ms": 99,
+        "slo-latency-window-minutes": 5
+      },
       "producer-config": {
         "acks": "all",
         "linger.ms": "0",
@@ -73,12 +126,38 @@
       }
     },
     {
-      "name": "9mb-messages-small-topic",
+      "name": "5mb-messages-small-topic-consumer",
+      "clusters": ["local-1"],
+      "topic": "5MB-MESSAGES-SMALL-TOPIC",
+      "observer-type": "consumer",
+      "custom-labels": {
+        "slo-latency-ms": 200,
+        "slo-latency-meta-ms": 99,
+        "slo-latency-window-minutes": 5
+      },
+      "consumer-config": {
+        "max.poll.interval.ms": "30000",
+        "heartbeat.interval.ms": "3000",
+        "session.timeout.ms": "30000",
+        "fetch.max.bytes": "10485760",
+        "max.partition.fetch.bytes": "10485760"
+      }
+    },
+    {
+      "name": "9mb-messages-small-topic-producer",
       "clusters": ["local-1"],
       "topic": "9MB-MESSAGES-SMALL-TOPIC",
-      "parallelism": 1,
-      "messages-per-bucket": 1,
-      "message-size-kb": 9216,
+      "observer-type": "consumer",
+      "volume-config": {
+        "parallelism": 1,
+        "messages-per-interval": 1,
+        "message-size-kb": 9216
+      },
+      "custom-labels": {
+        "slo-latency-ms": 800,
+        "slo-latency-meta-ms": 95,
+        "slo-latency-window-minutes": 5
+      },
       "producer-config": {
         "acks": "all",
         "linger.ms": "0",
@@ -86,7 +165,18 @@
         "delivery.timeout.ms": "30000",
         "request.timeout.ms": "10000",
         "max.request.size": "10485760"
+      }
+    },
+    {
+      "name": "9mb-messages-small-topic-consumer",
+      "clusters": ["local-1"],
+      "topic": "9MB-MESSAGES-SMALL-TOPIC",
+      "custom-labels": {
+        "slo-latency-ms": 800,
+        "slo-latency-meta-ms": 95,
+        "slo-latency-window-minutes": 5
       },
+      "observer-type": "consumer",
       "consumer-config": {
         "max.poll.interval.ms": "30000",
         "heartbeat.interval.ms": "3000",
