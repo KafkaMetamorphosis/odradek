@@ -2,11 +2,14 @@
   (:require [com.stuartsierra.component :as component]
             [odradek.system :as system]))
 
+(def kafka-bootstrap
+  (or (System/getenv "KAFKA_BOOTSTRAP") "localhost:9092"))
+
 (def test-config
   {:server              {:port 0}
    :orchestrator-config {:rate-interval-ms   100
                          :scrape-interval-ms 5000}
-   :kafka_clusters      {"test-cluster" {:bootstrap-url "localhost:9092"}}
+   :kafka_clusters      {"test-cluster" {:bootstrap-url kafka-bootstrap}}
    :observers           [{:name            "test-producer"
                           :clusters        ["test-cluster"]
                           :topic           "ODRADEK-TEST-TOPIC"
