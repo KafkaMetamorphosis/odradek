@@ -4,20 +4,32 @@
             [clojure.tools.logging :as log]
             [com.stuartsierra.component :as component]))
 
+(defn- normalize-config
+  "Cheshire's keyword-keys mode converts all JSON object keys to keywords,
+   including cluster names inside kafka_clusters (e.g. 'local-1' -> :local-1).
+   Observer :clusters vectors contain plain strings. To keep lookups consistent,
+   we stringify the kafka_clusters keys back to strings after parsing."
+  [raw-config]
+  (update raw-config :kafka_clusters
+          (fn [clusters]
+            (into {} (map (fn [[cluster-keyword cluster-value]]
+                            [(name cluster-keyword) cluster-value])
+                          clusters)))))
+
 (defn- read-config-from-filesystem [config-file-path]
   (log/info "Loading config from filesystem path:" config-file-path)
   (let [config-file (io/file config-file-path)]
     (when-not (.exists config-file)
       (throw (ex-info "CONFIG_PATH is set but the file does not exist"
                       {:config-path config-file-path})))
-    (json/parse-string (slurp config-file) true)))
+    (normalize-config (json/parse-string (slurp config-file) true))))
 
 (defn- read-config-from-classpath []
   (log/info "CONFIG_PATH not set — loading config from classpath resource config.json")
   (let [classpath-resource (io/resource "config.json")]
     (when-not classpath-resource
       (throw (ex-info "config.json not found on classpath and CONFIG_PATH is not set" {})))
-    (json/parse-string (slurp classpath-resource) true)))
+    (normalize-config (json/parse-string (slurp classpath-resource) true))))
 
 (defn- read-json-config []
   ;; (System/getenv "CONFIG_PATH") returns "" when the env var is set to an empty string

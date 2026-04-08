@@ -8,7 +8,7 @@
 (defn- ->properties [m]
   (let [props (java.util.Properties.)]
     (doseq [[k v] m]
-      (.setProperty props (str k) (str v)))
+      (.setProperty props (name k) (str v)))
     props))
 
 ;; change this, is coupled to log/config but should ge agnostic
