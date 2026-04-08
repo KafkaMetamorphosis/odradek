@@ -2,11 +2,6 @@
 
 (def ^:private backoff-threshold-ms (* 5 60 1000))
 
-(defn ready?
-  "Returns true if at least one loop is :running."
-  [observer-statuses]
-  (boolean (some #(= :running (:status %)) (vals observer-statuses))))
-
 (defn- backoff-too-long? [{:keys [status since]}]
   (and (= :backoff status)
        (> (- (System/currentTimeMillis) since) backoff-threshold-ms)))

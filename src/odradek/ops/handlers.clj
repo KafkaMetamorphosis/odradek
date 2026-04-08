@@ -27,11 +27,8 @@
 (defn liveness-handler [_components _request]
   (json-response 200 {:status "alive"}))
 
-(defn readiness-handler [{:keys [observer-statuses]} _request]
-  (let [statuses (if observer-statuses @observer-statuses {})]
-    (if (health/ready? statuses)
-      (json-response 200 {:status "ready"})
-      (json-response 503 {:status "not ready"}))))
+(defn readiness-handler [_components _request]
+  (json-response 200 {:status "ready"}))
 
 (defn config-dump-handler [{:keys [config]} _request]
   (json-response 200 (redact-config config)))

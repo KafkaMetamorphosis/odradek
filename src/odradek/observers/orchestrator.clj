@@ -77,8 +77,7 @@
 
 ;;; ---- Component ----
 
-(defrecord ObserverOrchestratorComponent [config metrics-registry
-                                          observer-statuses started-observers
+(defrecord ObserverOrchestratorComponent [config metrics-registry started-observers
                                           rate-loop-ch topic-info-loop-ch]
   component/Lifecycle
   (start [this]
@@ -86,7 +85,6 @@
     (let [raw-config              (get-in this [:config :config])
           observers               (:observers raw-config)
           rate-interval-ms        (get-in raw-config [:orchestrator-config :rate-interval-ms])
-          statuses                (atom {})
           built-observers         (reduce
                                     (fn [accumulator observer]
                                       (if-let [entry (build-observer-entry observer raw-config metrics-registry)]
@@ -108,7 +106,6 @@
       (log/info "ObserverOrchestrator started" {:observer-count (count built-observers)
                                                 :observer-names (keys built-observers)})
       (assoc this
-        :observer-statuses   statuses
         :started-observers   built-observers
         :rate-loop-ch        rate-stop-channel
         :topic-info-loop-ch  topic-info-stop-channel)))
