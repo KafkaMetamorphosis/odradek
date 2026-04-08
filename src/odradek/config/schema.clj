@@ -3,7 +3,7 @@
 
 (def ProducerConfig {s/Str s/Any})
 (def ConsumerConfig {s/Str s/Any})
-(def CustomLabels   {s/Str s/Str})
+(def CustomLabels   {s/Str s/Any})
 
 (def VolumeConfig
   {:parallelism s/Int

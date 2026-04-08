@@ -42,7 +42,7 @@
       "topic": "SMALL-TOPIC",
       "observer-type": "consumer",
       "custom-labels": {
-        "slo-latency-ms": 20,
+        "slo-latency-ms": 80,
         "slo-latency-meta-ms": 99.5,
         "slo-latency-window-minutes": 1
       },

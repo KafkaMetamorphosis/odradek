@@ -3,14 +3,22 @@
             [odradek.observers.consumer.logic :as consumer-logic]))
 
 (deftest derive-labels-returns-consumer-labels
-  (testing "returns only the 3 consumer-relevant label keys with correct values"
+  (testing "returns consumer label keys with correct values and nil custom-labels when absent"
     (let [observer {:name  "cons-obs"
                     :topic "my-topic"}
           labels   (consumer-logic/derive-labels observer "cluster-b")]
-      (is (= {:cluster_name "cluster-b"
-              :observer     "cons-obs"
-              :topic        "my-topic"}
-             labels)))))
+      (is (= {:cluster_name  "cluster-b"
+              :observer      "cons-obs"
+              :topic         "my-topic"
+              :custom-labels nil}
+             labels))))
+
+  (testing "passes raw custom-labels map through without transformation"
+    (let [observer {:name          "cons-obs"
+                    :topic         "my-topic"
+                    :custom-labels {:slo-latency-ms 20}}
+          labels   (consumer-logic/derive-labels observer "cluster-b")]
+      (is (= {:slo-latency-ms 20} (:custom-labels labels))))))
 
 (deftest observer-group-id-derived
   (testing "returns uppercase observer name when no override"

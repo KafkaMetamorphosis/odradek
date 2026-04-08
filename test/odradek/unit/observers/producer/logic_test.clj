@@ -4,7 +4,7 @@
   (:import [java.nio ByteBuffer]))
 
 (deftest derive-labels-returns-all-producer-labels
-  (testing "returns all 5 expected label keys with correct values"
+  (testing "returns all standard label keys with correct values and nil custom-labels when absent"
     (let [observer {:name          "prod-obs"
                     :topic         "my-topic"
                     :volume-config {:message-size-kb      64
@@ -14,8 +14,18 @@
               :observer                 "prod-obs"
               :topic                    "my-topic"
               :message_size_kb          "64"
-              :configured_rate_interval "100"}
-             labels)))))
+              :configured_rate_interval "100"
+              :custom-labels            nil}
+             labels))))
+
+  (testing "passes raw custom-labels map through without transformation"
+    (let [observer {:name          "prod-obs"
+                    :topic         "my-topic"
+                    :volume-config {:message-size-kb      64
+                                    :messages-per-interval 100}
+                    :custom-labels {:slo-latency-ms 20}}
+          labels   (producer-logic/derive-labels observer "cluster-a")]
+      (is (= {:slo-latency-ms 20} (:custom-labels labels))))))
 
 (deftest encode-payload-size
   (testing "encoded payload has the correct byte length"

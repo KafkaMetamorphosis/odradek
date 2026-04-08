@@ -1,11 +1,13 @@
 (ns odradek.observers.consumer.logic)
 
 (defn derive-labels
-  "Returns the metric label values map for a consumer observer x cluster pair."
+  "Returns the metric label values map for a consumer observer x cluster pair.
+   Includes :custom-labels as-is from the observer map (raw, no transformation)."
   [observer cluster-name]
-  {:cluster_name cluster-name
-   :observer     (:name observer)
-   :topic        (:topic observer)})
+  {:cluster_name  cluster-name
+   :observer      (:name observer)
+   :topic         (:topic observer)
+   :custom-labels (:custom-labels observer)})
 
 (defn decode-produced-at-header
   "Extracts the produced-at epoch-ms from the com.franz.odradek/produced-at

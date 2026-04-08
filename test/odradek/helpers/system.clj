@@ -31,5 +31,18 @@
                           :clusters        ["test-cluster"]
                           :observer-type   "topic-info"}]})
 
+(def test-config-with-custom-labels
+  (update test-config :observers
+          (fn [observers]
+            (mapv (fn [observer]
+                    (if (= (:name observer) "test-producer")
+                      (assoc observer :custom-labels {:slo-latency-ms          20
+                                                      :slo-latency-window-minutes 1})
+                      observer))
+                  observers))))
+
 (defn build-test-system []
   (component/start (system/new-system-with-config test-config)))
+
+(defn build-test-system-with-custom-labels []
+  (component/start (system/new-system-with-config test-config-with-custom-labels)))

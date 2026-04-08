@@ -5,6 +5,8 @@
             [odradek.helpers.system :as test-system]
             [odradek.helpers.kafka :as test-kafka]))
 
+(defn- init-system-with-custom-labels [] (test-system/build-test-system-with-custom-labels))
+
 (defn- init-system [] (test-system/build-test-system))
 (defn- stop-system [system] (component/stop system))
 
@@ -85,3 +87,20 @@
     (state-flow.api/return
       (is (> value2 value1)
           (str "counter must increment: " value2 " > " value1)))))
+
+(defflow produced-counter-emits-custom-labels
+  {:init init-system-with-custom-labels :cleanup stop-system}
+  (flow "kafka_odradek_messages_produced_total includes custom label dimensions when observer defines them"
+    [system (state-flow.api/get-state)]
+    [:let [port  (server-port system)
+           found (test-kafka/wait-for-metric port "kafka_odradek_messages_produced_total" 30000)
+           _     (is (true? found) "produced_total metric must appear within 30s")
+           body  (test-kafka/scrape-metrics port)
+           parsed (test-kafka/parse-metric-line body "kafka_odradek_messages_produced_total")]]
+    (state-flow.api/return
+      (do
+        (is (some? parsed) "produced_total metric line must be parseable")
+        (is (= "20" (get (:labels parsed) "slo_latency_ms"))
+            "custom label slo_latency_ms must appear with value \"20\"")
+        (is (= "1" (get (:labels parsed) "slo_latency_window_minutes"))
+            "custom label slo_latency_window_minutes must appear with value \"1\"")))))
