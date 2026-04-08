@@ -2,6 +2,7 @@
   (:require [clojure.string :as str])
   (:import [org.apache.kafka.clients.producer KafkaProducer]
            [org.apache.kafka.clients.consumer KafkaConsumer]
+           [org.apache.kafka.clients.admin AdminClient]
            [org.apache.kafka.common.serialization
             ByteArraySerializer ByteArrayDeserializer]))
 
@@ -38,3 +39,8 @@
                          "max.poll.records"   "1"
                          "group.id"           group-id})]
     (KafkaConsumer. (->properties config))))
+
+(defn new-admin-client
+  "Constructs a KafkaAdminClient connected to the given bootstrap URL."
+  [bootstrap-url]
+  (AdminClient/create (->properties {"bootstrap.servers" bootstrap-url})))

@@ -1,6 +1,6 @@
 SERVICES := kafka
 
-.PHONY: run-deps stop-deps create-test-topic unit integration test run
+.PHONY: run-deps stop-deps create-test-topic unit integration test run seed
 
 run-deps:
 	@all_running=true; \
@@ -31,3 +31,6 @@ test: unit integration
 
 run: run-deps
 	lein run
+
+seed: run-deps
+	lein with-profile +dev run -m odradek.seed
