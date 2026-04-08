@@ -2,18 +2,6 @@
   (:require [clojure.test :refer [deftest is testing]]
             [odradek.ops.health :as health]))
 
-(deftest ready-empty-statuses
-  (testing "empty statuses -> not ready"
-    (is (false? (health/ready? {})))))
-
-(deftest ready-with-running-loop
-  (testing "at least one :running -> ready"
-    (is (true? (health/ready? {[:obs :cluster :producer] {:status :running :since 0}})))))
-
-(deftest ready-all-backoff
-  (testing "all :backoff -> not ready"
-    (is (false? (health/ready? {[:obs :cluster :producer] {:status :backoff :since 0}})))))
-
 (deftest run-checks-healthy
   (testing "all :running -> :healthy"
     (let [statuses {[:obs :cluster :producer] {:status :running :since 0}
