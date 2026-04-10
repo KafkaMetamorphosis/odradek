@@ -29,7 +29,11 @@
                           :consumer-config {}}
                          {:name            "test-topic-info"
                           :clusters        ["test-cluster"]
-                          :observer-type   "topic-info"}]})
+                          :observer-type   "topic-info"
+                          :topics-filter   ".*"
+                          :observe-configs ["retention.ms"
+                                            "retention.bytes"
+                                            "cleanup.policy"]}]})
 
 (def test-config-with-custom-labels
   (update test-config :observers

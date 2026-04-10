@@ -1,5 +1,5 @@
 (ns odradek.clients.kafka-admin
-  (:import [org.apache.kafka.clients.admin AdminClient AdminClientConfig]
+  (:import [org.apache.kafka.clients.admin AdminClient AdminClientConfig ListTopicsOptions]
            [org.apache.kafka.common.config ConfigResource ConfigResource$Type]
            [java.util.concurrent TimeUnit]))
 
@@ -8,6 +8,17 @@
   [bootstrap-url]
   (AdminClient/create
     {AdminClientConfig/BOOTSTRAP_SERVERS_CONFIG bootstrap-url}))
+
+(defn list-topics
+  "Returns a collection of topic name strings for all non-internal topics.
+   Internal topics (names starting with '__') are excluded."
+  [admin-client]
+  (let [options (doto (ListTopicsOptions.) (.listInternal false))
+        topic-names (-> admin-client
+                        (.listTopics options)
+                        (.names)
+                        (.get 10 TimeUnit/SECONDS))]
+    (into [] topic-names)))
 
 (defn describe-topics
   "Returns a map of topic-name string to TopicDescription for each topic."

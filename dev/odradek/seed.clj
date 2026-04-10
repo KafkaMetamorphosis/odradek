@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [odradek.clients.kafka :as kafka-client])
-  (:import [org.apache.kafka.clients.admin NewTopic]
+  (:import [java.util UUID]
+           [org.apache.kafka.clients.admin NewTopic]
            [org.apache.kafka.common.errors TopicExistsException]))
 
 ;; Partition counts are assigned based on relative throughput derived from each
@@ -26,6 +27,8 @@
 (def ^:private replication-factor (short 1))
 (def ^:private topic-retention-ms "900000")
 (def ^:private topic-retention-bytes "52428800")
+(def ^:private random-topic-partition-options [1 2 3])
+(def ^:private random-topic-count 800)
 
 (defn- load-config []
   (with-open [config-reader (io/reader (io/resource "config.json"))]
@@ -61,15 +64,40 @@
           (log/infof "Topic already exists, skipping: %s" topic-name)
           (throw execution-exception))))))
 
+(defn- random-partition-count []
+  (rand-nth random-topic-partition-options))
+
+(defn- generate-random-topic-names [count]
+  (->> (repeatedly count #(str "RANDOM-" (str/upper-case (str (UUID/randomUUID)))))
+       vec))
+
+(defn- create-random-topic-or-skip! [admin-client topic-name]
+  (let [partition-count  (random-partition-count)
+        topic-descriptor (new-topic-descriptor topic-name partition-count)
+        creation-results (.createTopics admin-client [topic-descriptor])
+        topic-future     (-> creation-results .values (.get topic-name))]
+    (try
+      (.get topic-future)
+      (log/infof "Created random topic: %s (%d partitions)" topic-name partition-count)
+      (catch java.util.concurrent.ExecutionException execution-exception
+        (if (instance? TopicExistsException (.getCause execution-exception))
+          (log/infof "Topic already exists, skipping: %s" topic-name)
+          (throw execution-exception))))))
+
 (defn -main [& _args]
   (log/info "Starting Odradek topic seed...")
-  (let [config           (load-config)
-        bootstrap-url    (get-in config [:kafka_clusters :local-1 :bootstrap-url])
-        unique-topic-names (extract-unique-topic-names (:observers config))]
+  (let [config             (load-config)
+        bootstrap-url      (get-in config [:kafka_clusters :local-1 :bootstrap-url])
+        unique-topic-names (extract-unique-topic-names (:observers config))
+        random-topic-names (generate-random-topic-names random-topic-count)]
     (log/infof "Bootstrap URL: %s" bootstrap-url)
-    (log/infof "Topics to seed: %s" (str/join ", " unique-topic-names))
+    (log/infof "Seeding %d observer topics and %d random topics..."
+               (count unique-topic-names)
+               (count random-topic-names))
     (with-open [admin-client (kafka-client/new-admin-client bootstrap-url)]
       (doseq [topic-name unique-topic-names]
-        (create-topic-or-skip! admin-client topic-name))))
+        (create-topic-or-skip! admin-client topic-name))
+      (doseq [topic-name random-topic-names]
+        (create-random-topic-or-skip! admin-client topic-name))))
   (log/info "Seed complete.")
   (System/exit 0))

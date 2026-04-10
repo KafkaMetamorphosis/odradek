@@ -15,6 +15,8 @@
    :clusters                             [s/Str]
    :observer-type                        (s/enum :topic-info :producer :consumer)
    (s/optional-key :topic)               s/Str
+   (s/optional-key :topics-filter)       s/Str
+   (s/optional-key :observe-configs)     [s/Str]
    (s/optional-key :volume-config)       VolumeConfig
    (s/optional-key :custom-labels)       CustomLabels
    (s/optional-key :producer-config)     ProducerConfig

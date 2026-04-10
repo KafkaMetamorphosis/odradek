@@ -39,20 +39,65 @@
    "compression.type"    "producer"})
 
 ;; ---------------------------------------------------------------------------
-;; config->label-map
+;; classify-observe-configs
 ;; ---------------------------------------------------------------------------
 
-(deftest config->label-map-returns-correct-keyword-keys-and-values
-  (testing "given a Config with all 6 entries, returns a map with underscore keyword keys and string values"
+(deftest classify-observe-configs-all-numeric
+  (testing "all known numeric keys are classified as numeric, none as string"
+    (let [classification (topic-info-logic/classify-observe-configs
+                           ["retention.ms" "retention.bytes" "min.insync.replicas" "max.message.bytes"])]
+      (is (= #{"retention.ms" "retention.bytes" "min.insync.replicas" "max.message.bytes"}
+             (set (:numeric classification))))
+      (is (empty? (:string classification))))))
+
+(deftest classify-observe-configs-all-string
+  (testing "unknown config keys are classified as string, none as numeric"
+    (let [classification (topic-info-logic/classify-observe-configs
+                           ["cleanup.policy" "compression.type"])]
+      (is (empty? (:numeric classification)))
+      (is (= #{"cleanup.policy" "compression.type"}
+             (set (:string classification)))))))
+
+(deftest classify-observe-configs-mixed
+  (testing "mixed list splits into correct numeric and string categories"
+    (let [classification (topic-info-logic/classify-observe-configs
+                           ["retention.ms" "cleanup.policy" "retention.bytes" "compression.type"])]
+      (is (= #{"retention.ms" "retention.bytes"}
+             (set (:numeric classification))))
+      (is (= #{"cleanup.policy" "compression.type"}
+             (set (:string classification)))))))
+
+(deftest classify-observe-configs-empty
+  (testing "empty list produces empty numeric and string vectors"
+    (let [classification (topic-info-logic/classify-observe-configs [])]
+      (is (empty? (:numeric classification)))
+      (is (empty? (:string classification))))))
+
+;; ---------------------------------------------------------------------------
+;; config->label-map — dynamic string config extraction
+;; ---------------------------------------------------------------------------
+
+(deftest config->label-map-returns-only-requested-string-keys
+  (testing "only the requested string-observe-configs appear in the label map"
     (let [config    (make-config all-config-entries)
-          label-map (topic-info-logic/config->label-map config)]
-      (is (= {:min_insync_replicas "2"
-              :retention_ms        "604800000"
-              :retention_bytes     "-1"
-              :cleanup_policy      "delete"
-              :max_message_bytes   "1048576"
-              :compression_type    "producer"}
+          label-map (topic-info-logic/config->label-map config ["cleanup.policy" "compression.type"])]
+      (is (= {:cleanup_policy "delete"
+              :compression_type "producer"}
              label-map)))))
+
+(deftest config->label-map-absent-key-returns-empty-string
+  (testing "a config key not present in the Config object maps to empty string"
+    (let [config    (make-config {"cleanup.policy" "delete"})
+          label-map (topic-info-logic/config->label-map config ["cleanup.policy" "compression.type"])]
+      (is (= {:cleanup_policy   "delete"
+              :compression_type ""}
+             label-map)))))
+
+(deftest config->label-map-no-string-keys-returns-empty-map
+  (testing "an empty string-observe-configs list returns an empty map"
+    (let [config    (make-config all-config-entries)
+          label-map (topic-info-logic/config->label-map config [])]
+      (is (= {} label-map)))))
 
 ;; ---------------------------------------------------------------------------
 ;; topic-description->label-map — single partition
@@ -132,7 +177,7 @@
 ;; ---------------------------------------------------------------------------
 
 (deftest build-label-values-assembles-all-keys
-  (testing "merges cluster_name, topic, description labels, and config labels"
+  (testing "merges cluster_name, topic, description labels, and all legacy config labels"
     (let [node-1      (make-node 1 "rack-a")
           partition   (make-partition 0 node-1 [node-1] [node-1])
           description (make-topic-description "my-topic" [partition])
@@ -202,3 +247,80 @@
       (is (= "0:5,6" (nth positional-values 4)))
       (is (= "2" (nth positional-values 8)))
       (is (= "producer" (nth positional-values 13))))))
+
+;; ---------------------------------------------------------------------------
+;; extract-partition-count
+;; ---------------------------------------------------------------------------
+
+(deftest extract-partition-count-returns-long-partition-count
+  (testing "single partition returns 1"
+    (let [node-1      (make-node 1 "rack-a")
+          partition   (make-partition 0 node-1 [node-1] [node-1])
+          description (make-topic-description "single-part" [partition])]
+      (is (= 1 (topic-info-logic/extract-partition-count description)))))
+  (testing "three partitions returns 3"
+    (let [node-1      (make-node 1 "rack-a")
+          node-2      (make-node 2 "rack-b")
+          node-3      (make-node 3 "rack-c")
+          partition-0 (make-partition 0 node-1 [node-1] [node-1])
+          partition-1 (make-partition 1 node-2 [node-2] [node-2])
+          partition-2 (make-partition 2 node-3 [node-3] [node-3])
+          description (make-topic-description "three-part" [partition-0 partition-1 partition-2])]
+      (is (= 3 (topic-info-logic/extract-partition-count description))))))
+
+;; ---------------------------------------------------------------------------
+;; extract-replication-factor
+;; ---------------------------------------------------------------------------
+
+(deftest extract-replication-factor-returns-replica-count-for-partition-0
+  (testing "two replicas on partition 0 returns 2"
+    (let [node-1      (make-node 1 "rack-a")
+          node-2      (make-node 2 "rack-b")
+          partition   (make-partition 0 node-1 [node-1 node-2] [node-1 node-2])
+          description (make-topic-description "rf-topic" [partition])]
+      (is (= 2 (topic-info-logic/extract-replication-factor description)))))
+  (testing "single replica returns 1"
+    (let [node-1      (make-node 1 "rack-a")
+          partition   (make-partition 0 node-1 [node-1] [node-1])
+          description (make-topic-description "rf-one" [partition])]
+      (is (= 1 (topic-info-logic/extract-replication-factor description))))))
+
+;; ---------------------------------------------------------------------------
+;; extract-min-isr-proxy
+;; ---------------------------------------------------------------------------
+
+(deftest extract-min-isr-proxy-returns-isr-count-for-partition-0
+  (testing "two ISR nodes returns 2"
+    (let [node-1      (make-node 1 "rack-a")
+          node-2      (make-node 2 "rack-b")
+          partition   (make-partition 0 node-1 [node-1 node-2] [node-1 node-2])
+          description (make-topic-description "isr-topic" [partition])]
+      (is (= 2 (topic-info-logic/extract-min-isr-proxy description)))))
+  (testing "under-replicated partition with one ISR returns 1"
+    (let [node-1      (make-node 1 "rack-a")
+          node-2      (make-node 2 "rack-b")
+          partition   (make-partition 0 node-1 [node-1 node-2] [node-1])
+          description (make-topic-description "under-replicated" [partition])]
+      (is (= 1 (topic-info-logic/extract-min-isr-proxy description))))))
+
+;; ---------------------------------------------------------------------------
+;; extract-numeric-config-value
+;; ---------------------------------------------------------------------------
+
+(deftest extract-numeric-config-value-present-key-returns-parsed-long
+  (testing "standard 7-day retention.ms parses to long"
+    (let [config (make-config {"retention.ms" "604800000"})]
+      (is (= 604800000 (topic-info-logic/extract-numeric-config-value config "retention.ms")))))
+  (testing "-1 retention.bytes (unlimited) parses to -1"
+    (let [config (make-config {"retention.bytes" "-1"})]
+      (is (= -1 (topic-info-logic/extract-numeric-config-value config "retention.bytes"))))))
+
+(deftest extract-numeric-config-value-absent-key-returns-minus-one
+  (testing "key not present in Config returns -1"
+    (let [config (make-config {})]
+      (is (= -1 (topic-info-logic/extract-numeric-config-value config "retention.ms"))))))
+
+(deftest extract-numeric-config-value-non-parseable-value-returns-minus-one
+  (testing "non-numeric config value returns -1"
+    (let [config (make-config {"retention.ms" "not-a-number"})]
+      (is (= -1 (topic-info-logic/extract-numeric-config-value config "retention.ms"))))))

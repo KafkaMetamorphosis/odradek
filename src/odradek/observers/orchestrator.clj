@@ -44,15 +44,14 @@
                      observer kafka-clusters metrics-registry))}))
 
 (defn- build-topic-info-observer
-  "Creates a topic-info observer entry with a trigger channel (buffer 1) and component."
+  "Creates a topic-info observer entry with a trigger channel and component."
   [observer raw-config metrics-registry]
   (let [trigger-channel (async/chan)
-        kafka-clusters  (:kafka_clusters raw-config)
-        all-observers   (:observers raw-config)]
+        kafka-clusters  (:kafka_clusters raw-config)]
     {:trigger-ch trigger-channel
      :component  (component/start
                    (topic-info-component/new-topic-info-observer
-                     observer kafka-clusters all-observers metrics-registry trigger-channel))}))
+                     observer kafka-clusters metrics-registry trigger-channel))}))
 
 (defn- build-observer-entry
   "Dispatches observer construction based on observer-type.
