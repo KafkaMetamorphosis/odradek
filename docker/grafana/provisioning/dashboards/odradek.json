@@ -31,13 +31,64 @@
         "current": {}
       },
       {
-        "name": "slo_latency_ms",
-        "label": "SLO Latency (ms)",
-        "description": "Production latency SLO threshold in milliseconds, read from the observer's custom-labels",
+        "name": "slo_production_latency_ms",
+        "label": "SLO Production Latency (ms)",
+        "description": "Production latency SLO threshold in milliseconds, read from the producer observer's custom-labels",
         "type": "query",
         "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
         "query": {
-          "query": "label_values(kafka_odradek_messages_produced_total{topic=\"$topic\"}, slo_latency_ms)",
+          "query": "label_values(kafka_odradek_messages_produced_total{topic=\"$topic\"}, slo_production_latency_ms)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 0,
+        "includeAll": false,
+        "multi": false,
+        "hide": 0,
+        "current": {}
+      },
+      {
+        "name": "slo_fetch_latency_ms",
+        "label": "SLO Fetch Latency (ms)",
+        "description": "Fetch latency SLO threshold in milliseconds, read from the consumer observer's custom-labels",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "query": {
+          "query": "label_values(kafka_odradek_messages_fetched_total{topic=\"$topic\"}, slo_fetch_latency_ms)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 0,
+        "includeAll": false,
+        "multi": false,
+        "hide": 0,
+        "current": {}
+      },
+      {
+        "name": "slo_e2e_message_age_ms",
+        "label": "SLO E2E Message Age (ms)",
+        "description": "E2E message age SLO threshold in milliseconds, read from the consumer observer's custom-labels",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "query": {
+          "query": "label_values(kafka_odradek_e2e_message_age_ms_count{topic=\"$topic\"}, slo_e2e_message_age_ms)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 0,
+        "includeAll": false,
+        "multi": false,
+        "hide": 0,
+        "current": {}
+      },
+      {
+        "name": "slo_full_e2e_ms",
+        "label": "SLO Full E2E (ms)",
+        "description": "Full E2E SLO threshold in milliseconds (produce + propagate + consume), read from the consumer observer's custom-labels",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "query": {
+          "query": "label_values(kafka_odradek_full_e2e_ms_count{topic=\"$topic\"}, slo_full_e2e_ms)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -102,7 +153,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "type": "stat",
-      "title": "SLO 1: Production Latency (p$slo_latency_meta_ms < $slo_latency_ms ms)",
+      "title": "SLO 1: Production Latency (p$slo_latency_meta_ms < $slo_production_latency_ms ms)",
       "description": "Fraction of $slo_latency_window_minutes-minute windows where p$slo_latency_meta_ms production latency is below the SLO threshold",
       "gridPos": { "h": 4, "w": 8, "x": 0, "y": 1 },
       "id": 1,
@@ -133,7 +184,7 @@
       },
       "targets": [
         {
-          "expr": "(histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_messages_production_latency_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_latency_ms) * 100",
+          "expr": "(histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_messages_production_latency_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_production_latency_ms) * 100",
           "legendFormat": "Production Latency SLO",
           "refId": "A",
           "instant": true
@@ -143,8 +194,8 @@
     {
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "type": "stat",
-      "title": "SLO 2: Message Age & E2E (p$slo_latency_meta_ms < $slo_latency_ms ms)",
-      "description": "Fraction of $slo_latency_window_minutes-minute windows where both p$slo_latency_meta_ms message age AND e2e latency are below the SLO threshold",
+      "title": "SLO 2: Message Age (p$slo_latency_meta_ms < $slo_e2e_message_age_ms ms) & E2E (p$slo_latency_meta_ms < $slo_full_e2e_ms ms)",
+      "description": "Fraction of $slo_latency_window_minutes-minute windows where p$slo_latency_meta_ms message age is below $slo_e2e_message_age_ms ms AND p$slo_latency_meta_ms full e2e is below $slo_full_e2e_ms ms",
       "gridPos": { "h": 4, "w": 8, "x": 8, "y": 1 },
       "id": 2,
       "fieldConfig": {
@@ -174,7 +225,7 @@
       },
       "targets": [
         {
-          "expr": "(\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_e2e_message_age_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_latency_ms)\n  *\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_full_e2e_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_latency_ms)\n) * 100",
+          "expr": "(\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_e2e_message_age_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_e2e_message_age_ms)\n  *\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_full_e2e_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_full_e2e_ms)\n) * 100",
           "legendFormat": "Message Age & E2E SLO",
           "refId": "A",
           "instant": true
@@ -225,7 +276,7 @@
 
     {
       "type": "row",
-      "title": "SLO 1 - Production Latency (p$slo_latency_meta_ms < $slo_latency_ms ms, window $slo_latency_window_minutes min)",
+      "title": "SLO 1 - Production Latency (p$slo_latency_meta_ms < $slo_production_latency_ms ms, window $slo_latency_window_minutes min)",
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 101,
       "collapsed": false,
@@ -234,7 +285,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "type": "timeseries",
-      "title": "p$slo_latency_meta_ms Production Latency vs SLO ($slo_latency_ms ms)",
+      "title": "p$slo_latency_meta_ms Production Latency vs SLO ($slo_production_latency_ms ms)",
       "gridPos": { "h": 8, "w": 8, "x": 0, "y": 6 },
       "id": 10,
       "fieldConfig": {
@@ -288,7 +339,7 @@
           "refId": "A"
         },
         {
-          "expr": "max(kafka_odradek_messages_produced_total{topic=\"$topic\"} * 0 + $slo_latency_ms)",
+          "expr": "max(kafka_odradek_messages_produced_total{topic=\"$topic\"} * 0 + $slo_production_latency_ms)",
           "legendFormat": "SLO Threshold",
           "refId": "B"
         }
@@ -298,7 +349,7 @@
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "type": "timeseries",
       "title": "Production Latency SLO Compliance ($slo_latency_window_minutes min window)",
-      "description": "100% when p$slo_latency_meta_ms < $slo_latency_ms ms, 0% otherwise",
+      "description": "100% when p$slo_latency_meta_ms < $slo_production_latency_ms ms, 0% otherwise",
       "gridPos": { "h": 8, "w": 8, "x": 8, "y": 6 },
       "id": 11,
       "fieldConfig": {
@@ -339,7 +390,7 @@
       },
       "targets": [
         {
-          "expr": "(histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_messages_production_latency_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_latency_ms) * 100",
+          "expr": "(histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_messages_production_latency_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_production_latency_ms) * 100",
           "legendFormat": "SLO Compliance",
           "refId": "A"
         }
@@ -377,7 +428,7 @@
       },
       "targets": [
         {
-          "expr": "clamp_min(\n  (\n    1 - (\n      (1 - (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_messages_production_latency_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_latency_ms))\n      / (1 - 0.9998)\n    )\n  ) * 100,\n  0\n)",
+          "expr": "clamp_min(\n  (\n    1 - (\n      (1 - (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_messages_production_latency_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_production_latency_ms))\n      / (1 - 0.9998)\n    )\n  ) * 100,\n  0\n)",
           "legendFormat": "Error Budget",
           "refId": "A",
           "instant": true
@@ -387,7 +438,7 @@
 
     {
       "type": "row",
-      "title": "SLO 2 - Message Age & E2E Latency (p$slo_latency_meta_ms < $slo_latency_ms ms, window $slo_latency_window_minutes min)",
+      "title": "SLO 2 - Message Age (p$slo_latency_meta_ms < $slo_e2e_message_age_ms ms) & E2E (p$slo_latency_meta_ms < $slo_full_e2e_ms ms, window $slo_latency_window_minutes min)",
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
       "id": 102,
       "collapsed": false,
@@ -396,7 +447,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "type": "timeseries",
-      "title": "p$slo_latency_meta_ms E2E Message Age vs SLO ($slo_latency_ms ms)",
+      "title": "p$slo_latency_meta_ms E2E Message Age vs SLO ($slo_e2e_message_age_ms ms)",
       "gridPos": { "h": 8, "w": 8, "x": 0, "y": 15 },
       "id": 20,
       "fieldConfig": {
@@ -450,7 +501,7 @@
           "refId": "A"
         },
         {
-          "expr": "max(kafka_odradek_messages_fetched_total{topic=\"$topic\"} * 0 + $slo_latency_ms)",
+          "expr": "max(kafka_odradek_messages_fetched_total{topic=\"$topic\"} * 0 + $slo_e2e_message_age_ms)",
           "legendFormat": "SLO Threshold",
           "refId": "B"
         }
@@ -459,7 +510,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "type": "timeseries",
-      "title": "p$slo_latency_meta_ms Full E2E Latency vs SLO ($slo_latency_ms ms)",
+      "title": "p$slo_latency_meta_ms Full E2E Latency vs SLO ($slo_full_e2e_ms ms)",
       "gridPos": { "h": 8, "w": 8, "x": 8, "y": 15 },
       "id": 21,
       "fieldConfig": {
@@ -513,7 +564,7 @@
           "refId": "A"
         },
         {
-          "expr": "max(kafka_odradek_messages_fetched_total{topic=\"$topic\"} * 0 + $slo_latency_ms)",
+          "expr": "max(kafka_odradek_messages_fetched_total{topic=\"$topic\"} * 0 + $slo_full_e2e_ms)",
           "legendFormat": "SLO Threshold",
           "refId": "B"
         }
@@ -523,7 +574,7 @@
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "type": "timeseries",
       "title": "Message Age & E2E SLO Compliance ($slo_latency_window_minutes min window)",
-      "description": "100% when both p$slo_latency_meta_ms message age AND p$slo_latency_meta_ms full e2e are < $slo_latency_ms ms",
+      "description": "100% when p$slo_latency_meta_ms message age < $slo_e2e_message_age_ms ms AND p$slo_latency_meta_ms full e2e < $slo_full_e2e_ms ms",
       "gridPos": { "h": 8, "w": 8, "x": 16, "y": 15 },
       "id": 22,
       "fieldConfig": {
@@ -564,7 +615,7 @@
       },
       "targets": [
         {
-          "expr": "(\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_e2e_message_age_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_latency_ms)\n  *\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_full_e2e_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_latency_ms)\n) * 100",
+          "expr": "(\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_e2e_message_age_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_e2e_message_age_ms)\n  *\n  (histogram_quantile($slo_latency_meta_ms/100, sum by (le) (rate(kafka_odradek_full_e2e_ms_bucket{topic=\"$topic\"}[${slo_latency_window_minutes}m]))) <= bool $slo_full_e2e_ms)\n) * 100",
           "legendFormat": "SLO Compliance",
           "refId": "A"
         }

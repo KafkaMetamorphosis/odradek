@@ -77,12 +77,12 @@
 (defn- build-consumers
   "Creates one KafkaConsumer per cluster, subscribed to the observer's topic."
   [observer kafka-clusters]
-  (into {}
-    (for [cluster-name (:clusters observer)
-          :let [bootstrap-url (get-in kafka-clusters [cluster-name :bootstrap-url])]]
-      [cluster-name (kafka/new-consumer bootstrap-url
-                                        (:consumer-config observer)
-                                        (:name observer))])))
+  (let [group-id       (consumer-logic/observer-group-id (:name observer) (:consumer-config observer))
+        consumer-config (assoc (:consumer-config observer) "group.id" group-id)]
+    (into {}
+      (for [cluster-name (:clusters observer)
+            :let [bootstrap-url (get-in kafka-clusters [cluster-name :bootstrap-url])]]
+        [cluster-name (kafka/new-consumer bootstrap-url consumer-config)]))))
 
 (defn- start-consumer-futures
   "Starts a blocking poll-loop thread per cluster. Returns a map of

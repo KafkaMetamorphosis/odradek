@@ -1,5 +1,4 @@
 (ns odradek.clients.kafka
-  (:require [clojure.string :as str])
   (:import [org.apache.kafka.clients.producer KafkaProducer]
            [org.apache.kafka.clients.consumer KafkaConsumer]
            [org.apache.kafka.clients.admin AdminClient]
@@ -27,17 +26,15 @@
 (defn new-consumer
   "Constructs a KafkaConsumer with ByteArrayDeserializer.
    Fixed: auto.offset.reset=latest, enable.auto.commit=false, max.poll.records=1.
-   group.id derived from observer-name unless overridden in consumer-config."
-  [bootstrap-url consumer-config observer-name] 
-  (let [group-id (str/upper-case (or (get consumer-config "group.id") observer-name))
-        config   (merge consumer-config
-                        {"bootstrap.servers"  bootstrap-url
-                         "key.deserializer"   (.getName ByteArrayDeserializer)
-                         "value.deserializer" (.getName ByteArrayDeserializer)
-                         "auto.offset.reset"  "latest"
-                         "enable.auto.commit" "false"
-                         "max.poll.records"   "1"
-                         "group.id"           group-id})]
+   group.id must be present in consumer-config."
+  [bootstrap-url consumer-config]
+  (let [config (merge consumer-config
+                      {"bootstrap.servers"  bootstrap-url
+                       "key.deserializer"   (.getName ByteArrayDeserializer)
+                       "value.deserializer" (.getName ByteArrayDeserializer)
+                       "auto.offset.reset"  "latest"
+                       "enable.auto.commit" "false"
+                       "max.poll.records"   "1"})]
     (KafkaConsumer. (->properties config))))
 
 (defn new-admin-client

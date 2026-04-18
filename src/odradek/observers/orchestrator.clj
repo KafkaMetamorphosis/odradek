@@ -128,7 +128,6 @@
         (component/stop component)))
     (log/info "ObserverOrchestrator stopped.")
     (assoc this
-      :observer-statuses  nil
       :started-observers  nil
       :rate-loop-ch       nil
       :topic-info-loop-ch nil)))

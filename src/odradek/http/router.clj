@@ -11,29 +11,6 @@
   (:import [org.slf4j MDC]
            [java.util UUID]))
 
-
-
-;;(defn wrap-js;; on-body [handler]
-  ;;   (fn [request]
-  ;;     (let [body (when-let [body-stream (:body request)]
-  ;;                  (when (and body-stream
-  ;;                             (some-> (get-in request [:headers "content-type"])
-  ;;                                     (.contains "application/json")))
-  ;;                    (json/parse-string (slurp body-stream) true)))]
-  ;;       (handler (cond-> request
-  ;;                  body (assoc :body body)))))
-  
-  
-  ;;)
-;; 
-;; (defn wrap-json-response [handler]
-;;   (fn [request]
-;;     (let [response (handler request)]
-;;       (when response
-;;         (-> response
-;;             (update :body json/generate-string)
-;;             (assoc-in [:headers "Content-Type"] "application/json"))))))
-
 (defn wrap-exception-handler [handler]
   (fn [request]
     (try
@@ -93,9 +70,8 @@
 (defrecord RouterComponent [config metrics-registry observer-orchestrator handler]
   component/Lifecycle
   (start [this]
-    (let [components {:config            (:config config)
-                      :metrics-registry  metrics-registry
-                      :observer-statuses (:observer-statuses observer-orchestrator)}
+    (let [components {:config           (:config config)
+                      :metrics-registry metrics-registry}
           routers (-> (routes components) 
                           wrap-not-found
                           wrap-keyword-params

@@ -23,12 +23,12 @@
       ]
     },
     {
-      "name": "small-messages-small-topic-producer",
+      "name": "1kb-messages-small-topic-producer",
       "clusters": ["local-1"],
-      "topic": "SMALL-TOPIC",
+      "topic": "1KB-TOPIC",
       "observer-type": "producer",
       "custom-labels": {
-        "slo-latency-ms": 20,
+        "slo-production-latency-ms": 80,
         "slo-latency-meta-ms": 99.5,
         "slo-latency-window-minutes": 1
       },
@@ -46,12 +46,96 @@
       }
     },
     {
-      "name": "small-messages-small-topic-consumer",
+      "name": "1kb-messages-small-topic-consumer",
       "clusters": ["local-1"],
-      "topic": "SMALL-TOPIC",
+      "topic": "1KB-TOPIC",
       "observer-type": "consumer",
       "custom-labels": {
-        "slo-latency-ms": 80,
+        "slo-fetch-latency-ms": 500,
+        "slo-e2e-message-age-ms": 1000,
+        "slo-full-e2e-ms": 1080,
+        "slo-latency-meta-ms": 99.5,
+        "slo-latency-window-minutes": 1
+      },
+      "consumer-config": {
+        "max.poll.interval.ms": "30000",
+        "heartbeat.interval.ms": "3000",
+        "session.timeout.ms": "30000"
+      }
+    },
+    {
+      "name": "10kb-messages-small-topic-producer",
+      "clusters": ["local-1"],
+      "topic": "10KB-TOPIC",
+      "observer-type": "producer",
+      "custom-labels": {
+        "slo-production-latency-ms": 80,
+        "slo-latency-meta-ms": 99.5,
+        "slo-latency-window-minutes": 1
+      },
+      "volume-config": {
+        "parallelism": 1,
+        "messages-per-interval": 10,
+        "message-size-kb": 10
+      },
+      "producer-config": {
+        "acks": "all",
+        "linger.ms": "0",
+        "retries": "3",
+        "delivery.timeout.ms": "5000",
+        "request.timeout.ms": "1500"
+      }
+    },
+    {
+      "name": "10kb-messages-small-topic-consumer",
+      "clusters": ["local-1"],
+      "topic": "10KB-TOPIC",
+      "observer-type": "consumer",
+      "custom-labels": {
+        "slo-fetch-latency-ms": 500,
+        "slo-e2e-message-age-ms": 1000,
+        "slo-full-e2e-ms": 1080,
+        "slo-latency-meta-ms": 99.5,
+        "slo-latency-window-minutes": 1
+      },
+      "consumer-config": {
+        "max.poll.interval.ms": "30000",
+        "heartbeat.interval.ms": "3000",
+        "session.timeout.ms": "30000"
+      }
+    },
+    {
+      "name": "100kb-messages-small-topic-producer",
+      "clusters": ["local-1"],
+      "topic": "100KB-TOPIC",
+      "observer-type": "producer",
+      "custom-labels": {
+        "slo-production-latency-ms": 150,
+        "slo-latency-meta-ms": 99.5,
+        "slo-latency-window-minutes": 1
+      },
+      "volume-config": {
+        "parallelism": 1,
+        "messages-per-interval": 10,
+        "message-size-kb": 10
+      },
+      "producer-config": {
+        "acks": "all",
+        "linger.ms": "0",
+        "retries": "3",
+        "delivery.timeout.ms": "5000",
+        "request.timeout.ms": "1500"
+      }
+    },
+    {
+      "name": "100kb-messages-small-topic-consumer",
+      "clusters": ["local-1"],
+      "topic": "100KB-TOPIC",
+      "observer-type": "consumer",
+      "custom-labels": {
+        "slo-fetch-latency-ms": 500,
+        "slo-e2e-message-age-ms": 1000,
+        "slo-full-e2e-ms": 1150,
         "slo-latency-meta-ms": 99.5,
         "slo-latency-window-minutes": 1
       },
@@ -72,7 +156,7 @@
         "message-size-kb": 1024
       },
       "custom-labels": {
-        "slo-latency-ms": 80,
+        "slo-production-latency-ms": 250,
         "slo-latency-meta-ms": 99,
         "slo-latency-window-minutes": 5
       },
@@ -91,7 +175,9 @@
       "topic": "1MB-MESSAGES-SMALL-TOPIC",
       "observer-type": "consumer",
       "custom-labels": {
-        "slo-latency-ms": 80,
+        "slo-fetch-latency-ms": 500,
+        "slo-e2e-message-age-ms": 1000,
+        "slo-full-e2e-ms": 1250,
         "slo-latency-meta-ms": 99,
         "slo-latency-window-minutes": 5
       },
@@ -114,7 +200,7 @@
         "message-size-kb": 5120
       },
       "custom-labels": {
-        "slo-latency-ms": 200,
+        "slo-production-latency-ms": 700,
         "slo-latency-meta-ms": 99,
         "slo-latency-window-minutes": 5
       },
@@ -125,13 +211,6 @@
         "delivery.timeout.ms": "30000",
         "request.timeout.ms": "10000",
         "max.request.size": "10485760"
-      },
-      "consumer-config": {
-        "max.poll.interval.ms": "30000",
-        "heartbeat.interval.ms": "3000",
-        "session.timeout.ms": "30000",
-        "fetch.max.bytes": "10485760",
-        "max.partition.fetch.bytes": "10485760"
       }
     },
     {
@@ -140,7 +219,9 @@
       "topic": "5MB-MESSAGES-SMALL-TOPIC",
       "observer-type": "consumer",
       "custom-labels": {
-        "slo-latency-ms": 200,
+        "slo-fetch-latency-ms": 1200,
+        "slo-e2e-message-age-ms": 2400,
+        "slo-full-e2e-ms": 3100,
         "slo-latency-meta-ms": 99,
         "slo-latency-window-minutes": 5
       },
@@ -163,7 +244,7 @@
         "message-size-kb": 9216
       },
       "custom-labels": {
-        "slo-latency-ms": 800,
+        "slo-production-latency-ms": 800,
         "slo-latency-meta-ms": 95,
         "slo-latency-window-minutes": 5
       },
@@ -181,7 +262,9 @@
       "clusters": ["local-1"],
       "topic": "9MB-MESSAGES-SMALL-TOPIC",
       "custom-labels": {
-        "slo-latency-ms": 800,
+        "slo-fetch-latency-ms": 1500,
+        "slo-e2e-message-age-ms": 3000,
+        "slo-full-e2e-ms": 3800,
         "slo-latency-meta-ms": 95,
         "slo-latency-window-minutes": 5
       },

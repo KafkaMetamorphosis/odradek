@@ -11,7 +11,9 @@
 ;; Partition counts are assigned based on relative throughput derived from each
 ;; topic's observer volume-config (message-size-kb * messages-per-interval):
 ;;
-;;   SMALL-TOPIC                4 partitions   (~100 KB/interval)
+;;   1KB-TOPIC                  4 partitions   (~10 KB/interval)
+;;   10KB-TOPIC                 4 partitions   (~100 KB/interval)
+;;   100KB-TOPIC                4 partitions   (~100 KB/interval)
 ;;   1MB-MESSAGES-SMALL-TOPIC  16 partitions  (~3072 KB/interval)
 ;;   9MB-MESSAGES-SMALL-TOPIC  64 partitions  (~9216 KB/interval)
 ;;   5MB-MESSAGES-SMALL-TOPIC 128 partitions  (~10240 KB/interval)
@@ -19,7 +21,9 @@
 ;; Each topic is created exactly once with its assigned partition count.
 ;; No suffixes are appended — topic names match config.json exactly.
 (def ^:private topic-partition-assignments
-  {"SMALL-TOPIC"              4
+  {"1KB-TOPIC"                4
+   "10KB-TOPIC"               4
+   "100KB-TOPIC"              4
    "1MB-MESSAGES-SMALL-TOPIC" 16
    "9MB-MESSAGES-SMALL-TOPIC" 64
    "5MB-MESSAGES-SMALL-TOPIC" 128})
