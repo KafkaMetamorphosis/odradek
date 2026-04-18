@@ -102,21 +102,29 @@
 
 (defflow consumer-histogram-counts-match-fetched-counter
   {:init init-system :cleanup stop-system}
-  (flow "fetch_latency, e2e_message_age, and full_e2e histogram counts all equal fetched_total"
+  (flow "fetch_latency and e2e_message_age counts equal fetched_total; full_e2e count <= fetched_total"
     [system (state-flow.api/get-state)]
     [:let [port  (server-port system)
-           found (test-kafka/wait-for-metric port "kafka_odradek_messages_fetched_total" 60000)
-           _     (is (true? found) "fetched_total must appear within 60s")
+           ;; Wait for full_e2e specifically — it is recorded after commitSync, which is the
+           ;; last step in the poll loop. Waiting for it guarantees at least one complete
+           ;; fetch+commit cycle has finished before we scrape.
+           found (test-kafka/wait-for-metric port "kafka_odradek_full_e2e_ms_count" 60000)
+           _     (is (true? found) "full_e2e_ms_count must appear within 60s")
            body  (test-kafka/scrape-metrics port)
-           fetched-total     (:value (test-kafka/parse-metric-line body "kafka_odradek_messages_fetched_total"))
+           fetched-total       (:value (test-kafka/parse-metric-line body "kafka_odradek_messages_fetched_total"))
            fetch-latency-count (:value (test-kafka/parse-metric-line body "kafka_odradek_messages_fetch_latency_ms_count"))
-           e2e-age-count     (:value (test-kafka/parse-metric-line body "kafka_odradek_e2e_message_age_ms_count"))
-           full-e2e-count    (:value (test-kafka/parse-metric-line body "kafka_odradek_full_e2e_ms_count"))]]
+           e2e-age-count       (:value (test-kafka/parse-metric-line body "kafka_odradek_e2e_message_age_ms_count"))
+           full-e2e-count      (:value (test-kafka/parse-metric-line body "kafka_odradek_full_e2e_ms_count"))]]
     (state-flow.api/return
       (do
         (is (== fetch-latency-count fetched-total)
             (str "fetch_latency count (" fetch-latency-count ") must equal fetched_total (" fetched-total ")"))
         (is (== e2e-age-count fetched-total)
             (str "e2e_message_age count (" e2e-age-count ") must equal fetched_total (" fetched-total ")"))
-        (is (== full-e2e-count fetched-total)
-            (str "full_e2e count (" full-e2e-count ") must equal fetched_total (" fetched-total ")"))))))
+        ;; full_e2e is recorded after commitSync, which runs after fetched_total is incremented.
+        ;; A scrape between those two points will see full_e2e-count < fetched_total, so we
+        ;; assert <= rather than == to avoid a permanent race condition.
+        (is (<= full-e2e-count fetched-total)
+            (str "full_e2e count (" full-e2e-count ") must be <= fetched_total (" fetched-total ")"))
+        (is (>= full-e2e-count 1.0)
+            (str "full_e2e count (" full-e2e-count ") must be >= 1"))))))
