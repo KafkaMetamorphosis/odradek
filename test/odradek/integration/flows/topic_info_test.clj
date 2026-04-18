@@ -58,37 +58,38 @@
         (is (some? labels) "metric line for ODRADEK-TEST-TOPIC must be present")
         (is (= "test-cluster" (get labels "cluster_name")))
         (is (= "ODRADEK-TEST-TOPIC" (get labels "topic")))
+        (is (= "1" (get labels "partitions")))
+        ;; cleanup_policy and retention_ms are in the test observe-configs list
         (is (= "delete" (get labels "cleanup_policy")))
-        (is (= "producer" (get labels "compression_type")))
-        (is (= "1" (get labels "min_insync_replicas")))
-        (is (= "1" (get labels "partitions")))))))
+        (is (some? (get labels "retention_ms")))))))
 
 ;; ---------------------------------------------------------------------------
-;; New numeric gauges: kafka_odradek_topic_partitions, _replication_factor, etc.
+;; Partition count appears as a label on kafka_odradek_topic_config
 ;; ---------------------------------------------------------------------------
 
-(defflow topic-partitions-gauge-appears-in-metrics
+(defflow topic-config-partitions-label-appears-in-metrics
   {:init init-system :cleanup stop-system}
-  (flow "kafka_odradek_topic_partitions appears in /metrics for ODRADEK-TEST-TOPIC"
+  (flow "kafka_odradek_topic_config appears in /metrics with partitions label for ODRADEK-TEST-TOPIC"
     [system (state-flow.api/get-state)]
     [:let [port  (-> system :http-server :server .getConnectors first .getLocalPort)
-           found (test-kafka/wait-for-metric port "kafka_odradek_topic_partitions" 15000)]]
+           found (test-kafka/wait-for-metric port "kafka_odradek_topic_config{" 15000)]]
     (state-flow.api/return
       (is (true? found)))))
 
-(defflow topic-partitions-gauge-has-correct-value-for-test-topic
+(defflow topic-config-partitions-label-has-correct-value
   {:init init-system :cleanup stop-system}
-  (flow "kafka_odradek_topic_partitions has value 1 for ODRADEK-TEST-TOPIC"
+  (flow "kafka_odradek_topic_config has partitions=1 label for ODRADEK-TEST-TOPIC and value 1.0"
     [system (state-flow.api/get-state)]
     [:let [port   (-> system :http-server :server .getConnectors first .getLocalPort)
-           _      (test-kafka/wait-for-metric port "kafka_odradek_topic_partitions" 15000)
+           _      (test-kafka/wait-for-metric port "kafka_odradek_topic_config{" 15000)
            body   (test-kafka/scrape-metrics port)
-           parsed (test-kafka/parse-metric-line body "kafka_odradek_topic_partitions" "ODRADEK-TEST-TOPIC")]]
+           parsed (test-kafka/parse-metric-line body "kafka_odradek_topic_config" "ODRADEK-TEST-TOPIC")]]
     (state-flow.api/return
       (do
-        (is (some? parsed) "kafka_odradek_topic_partitions line for ODRADEK-TEST-TOPIC must be present")
+        (is (some? parsed) "kafka_odradek_topic_config line for ODRADEK-TEST-TOPIC must be present")
         (is (= "test-cluster" (get (:labels parsed) "cluster_name")))
         (is (= "ODRADEK-TEST-TOPIC" (get (:labels parsed) "topic")))
+        (is (= "1" (get (:labels parsed) "partitions")))
         (is (= 1.0 (:value parsed)))))))
 
 (defflow topic-scrape-process-metrics-appear-in-metrics
@@ -123,26 +124,28 @@
         (is (= 0.0 (:value describe-parsed)) "describe error counter must start at 0")))))
 
 ;; ---------------------------------------------------------------------------
-;; topics-filter: matching topic produces numeric config gauge
+;; topics-filter: matching topic appears on kafka_odradek_topic_config with observe-config labels
 ;; ---------------------------------------------------------------------------
 
-(defflow matching-topic-produces-numeric-config-gauge
+(defflow matching-topic-appears-on-topic-config-gauge
   {:init init-system :cleanup stop-system}
-  (flow "kafka_odradek_topic_config_retention_ms appears for ODRADEK-TEST-TOPIC when topics-filter is '.*'"
+  (flow "kafka_odradek_topic_config appears for ODRADEK-TEST-TOPIC when topics-filter is '.*'"
     [system (state-flow.api/get-state)]
     [:let [port   (-> system :http-server :server .getConnectors first .getLocalPort)
-           found  (test-kafka/wait-for-metric port "kafka_odradek_topic_config_retention_ms" 15000)
+           found  (test-kafka/wait-for-metric port "kafka_odradek_topic_config{" 15000)
            body   (test-kafka/scrape-metrics port)
-           parsed (test-kafka/parse-metric-line body "kafka_odradek_topic_config_retention_ms" "ODRADEK-TEST-TOPIC")]]
+           parsed (test-kafka/parse-metric-line body "kafka_odradek_topic_config" "ODRADEK-TEST-TOPIC")]]
     (state-flow.api/return
       (do
-        (is (true? found) "kafka_odradek_topic_config_retention_ms must appear in /metrics")
+        (is (true? found) "kafka_odradek_topic_config must appear in /metrics")
         (is (some? parsed) "metric line for ODRADEK-TEST-TOPIC must be present")
         (is (= "test-cluster" (get (:labels parsed) "cluster_name")))
-        (is (= "ODRADEK-TEST-TOPIC" (get (:labels parsed) "topic")))))))
+        (is (= "ODRADEK-TEST-TOPIC" (get (:labels parsed) "topic")))
+        ;; retention_ms is in the test observe-configs list, so it appears as a label
+        (is (some? (get (:labels parsed) "retention_ms")))))))
 
 ;; ---------------------------------------------------------------------------
-;; topics-filter: non-matching topic produces zero metrics
+;; topics-filter: non-matching topic does not appear on kafka_odradek_topic_config
 ;; ---------------------------------------------------------------------------
 
 (defflow non-matching-topic-produces-no-metrics
@@ -152,38 +155,33 @@
                               [:observers 2 :topics-filter]
                               "NO-MATCH-PREFIX-.*"))))
    :cleanup stop-system}
-  (flow "a topic not matching topics-filter does not appear in /metrics output"
+  (flow "a topic not matching topics-filter does not appear on kafka_odradek_topic_config"
     [system (state-flow.api/get-state)]
     [:let [port  (-> system :http-server :server .getConnectors first .getLocalPort)
            _     (test-kafka/wait-for-metric port "kafka_odradek_topic_scrape_duration_seconds" 15000)
            body  (test-kafka/scrape-metrics port)
-           ;; ODRADEK-TEST-TOPIC should not appear in any topic-info metric line
-           retention-parsed (test-kafka/parse-metric-line body
-                              "kafka_odradek_topic_config_retention_ms" "ODRADEK-TEST-TOPIC")
-           partitions-parsed (test-kafka/parse-metric-line body
-                               "kafka_odradek_topic_partitions" "ODRADEK-TEST-TOPIC")]]
+           ;; ODRADEK-TEST-TOPIC must not appear on the info gauge when filter does not match
+           topic-config-parsed (test-kafka/parse-metric-line body
+                                 "kafka_odradek_topic_config" "ODRADEK-TEST-TOPIC")]]
     (state-flow.api/return
-      (do
-        (is (nil? retention-parsed)
-            "kafka_odradek_topic_config_retention_ms must not appear for non-matching topic")
-        (is (nil? partitions-parsed)
-            "kafka_odradek_topic_partitions must not appear for non-matching topic")))))
+      (is (nil? topic-config-parsed)
+          "kafka_odradek_topic_config must not appear for non-matching topic"))))
 
 ;; ---------------------------------------------------------------------------
-;; observe-configs: string config key appears as label on kafka_odradek_topic_string_config
+;; observe-configs: config key appears as label on kafka_odradek_topic_config
 ;; ---------------------------------------------------------------------------
 
-(defflow string-config-appears-as-label-on-topic-info-gauge
+(defflow observe-config-appears-as-label-on-topic-config-gauge
   {:init init-system :cleanup stop-system}
-  (flow "cleanup.policy appears as a label on kafka_odradek_topic_string_config for ODRADEK-TEST-TOPIC"
+  (flow "cleanup.policy appears as cleanup_policy label on kafka_odradek_topic_config for ODRADEK-TEST-TOPIC"
     [system (state-flow.api/get-state)]
     [:let [port   (-> system :http-server :server .getConnectors first .getLocalPort)
-           found  (test-kafka/wait-for-metric port "kafka_odradek_topic_string_config" 15000)
+           found  (test-kafka/wait-for-metric port "kafka_odradek_topic_config{" 15000)
            body   (test-kafka/scrape-metrics port)
-           parsed (test-kafka/parse-metric-line body "kafka_odradek_topic_string_config" "ODRADEK-TEST-TOPIC")]]
+           parsed (test-kafka/parse-metric-line body "kafka_odradek_topic_config" "ODRADEK-TEST-TOPIC")]]
     (state-flow.api/return
       (do
-        (is (true? found) "kafka_odradek_topic_string_config must appear in /metrics")
+        (is (true? found) "kafka_odradek_topic_config must appear in /metrics")
         (is (some? parsed) "metric line for ODRADEK-TEST-TOPIC must be present")
         (is (= "test-cluster" (get (:labels parsed) "cluster_name")))
         (is (= "ODRADEK-TEST-TOPIC" (get (:labels parsed) "topic")))

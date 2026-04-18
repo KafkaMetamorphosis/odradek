@@ -43,10 +43,10 @@
    :partitions_leader_broker_ids (build-partitions-leader-broker-id topic-description)
    :partitions_replicas_broker_racks (build-partitions-replicas-racks topic-description)})
 
-(defn- legacy-config->label-map
-  "Extracts the fixed set of 6 topic configuration values used by the legacy
-   kafka_odradek_topic_config info gauge. Returns a map with underscore-delimited
-   keyword keys and string values."
+(defn- all-observe-configs->label-map
+  "Extracts the fixed set of observe-config values from a Kafka Config object as labels.
+   Returns a map of sanitized keyword (underscore) to string value for all six standard
+   observe-config keys. This drives the label values for the kafka_odradek_topic_config gauge."
   [config]
   (letfn [(config-value [config-key]
             (.value (.get config config-key)))]
@@ -85,12 +85,13 @@
 
 (defn build-label-values
   "Combines cluster name, topic, topic description, and config into the full
-   label values map for the legacy kafka_odradek_topic_config gauge."
+   label values map for the kafka_odradek_topic_config info gauge.
+   Returns a flat map with keyword keys matching all registered label names."
   [cluster-name topic topic-description config]
   (merge {:cluster_name cluster-name
           :topic        topic}
          (topic-description->label-map topic-description)
-         (legacy-config->label-map config)))
+         (all-observe-configs->label-map config)))
 
 ;;
 ;; Numeric gauge extraction — used by the per-metric numeric gauges
