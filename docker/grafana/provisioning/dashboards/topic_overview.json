@@ -1495,8 +1495,8 @@
       },
       "targets": [
         {
-          "expr": "kafka_odradek_topic_partitions{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
-          "legendFormat": "{{topic}}",
+          "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+          "legendFormat": "{{topic}} ({{partitions}} partitions)",
           "refId": "A"
         }
       ],
@@ -1559,8 +1559,8 @@
       },
       "targets": [
         {
-          "expr": "kafka_odradek_topic_replication_factor{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
-          "legendFormat": "{{topic}}",
+          "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+          "legendFormat": "{{topic}} (RF={{replication_factor}})",
           "refId": "A"
         }
       ],
@@ -1630,8 +1630,8 @@
       },
       "targets": [
         {
-          "expr": "kafka_odradek_topic_min_isr{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
-          "legendFormat": "{{topic}}",
+          "expr": "kafka_odradek_topic_config{cluster_name=~\"$cluster_name\", topic=~\"$topic\"}",
+          "legendFormat": "{{topic}} (min.insync.replicas={{min_insync_replicas}})",
           "refId": "A"
         }
       ],

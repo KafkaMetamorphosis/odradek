@@ -42,17 +42,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -61,7 +61,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 80",
+          "expr": "sum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"80\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -82,17 +82,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -101,7 +101,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 500",
+          "expr": "sum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"500\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -122,17 +122,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -141,7 +141,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 1000",
+          "expr": "sum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"1000\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -162,17 +162,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -181,7 +181,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 1080",
+          "expr": "sum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"1500\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -211,17 +211,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -230,7 +230,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 250",
+          "expr": "sum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"250\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -251,17 +251,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -270,7 +270,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 500",
+          "expr": "sum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"500\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -291,17 +291,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -310,7 +310,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 1000",
+          "expr": "sum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"1000\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -331,17 +331,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -350,7 +350,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 1250",
+          "expr": "sum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"1500\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -380,17 +380,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -399,7 +399,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 800",
+          "expr": "sum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"800\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -420,17 +420,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -439,7 +439,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 1500",
+          "expr": "sum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"1500\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -460,17 +460,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -479,7 +479,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 3000",
+          "expr": "sum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"3000\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -500,17 +500,17 @@
       },
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
-            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
-            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
-          ],
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "mappings": [],
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 90 },
+              { "color": "green", "value": 99 }
             ]
           }
         },
@@ -519,7 +519,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 3800",
+          "expr": "sum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"4000\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }

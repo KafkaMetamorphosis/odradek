@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Grafana dashboard "SLO Overview per Cluster": state timeline SLO compliance per cluster (local-1→10KB, local-2→1MB, local-3→9MB observers)
 - Cluster filter variable added to all Grafana dashboards
 
+### Fixed
+- Grafana dashboards: removed all references to non-existent metrics (`kafka_odradek_topic_partitions`, `kafka_odradek_topic_replication_factor`, `kafka_odradek_topic_min_isr`) and replaced them with queries on `kafka_odradek_topic_config`
+- Grafana state timeline panels: replaced boolean PASS/FAIL (`> bool N`) with SLO compliance percentage (0–100%) using `rate(bucket{le=...}) / rate(bucket{le="+Inf"}) * 100`
+
 ### Changed
 - `Makefile`: `run-deps`/`stop-deps` use `docker-compose.local.yml`; `integration` target now uses `docker-compose.test.yaml` (renamed)
 - `docker-compose.local.yml`: kafka-1 host port changed from 9092 to 19092 to avoid collision with the test broker on port 9092
