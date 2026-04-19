@@ -10,76 +10,7 @@
   "schemaVersion": 39,
   "tags": ["kafka", "odradek", "slo", "cluster-overview"],
   "templating": {
-    "list": [
-      {
-        "name": "slo_production_latency_ms",
-        "label": "SLO Production Latency (ms)",
-        "description": "Production latency SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
-        "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-        "query": {
-          "query": "label_values(kafka_odradek_messages_produced_total{topic=\"10KB-TOPIC\"}, slo_production_latency_ms)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "sort": 0,
-        "includeAll": false,
-        "multi": false,
-        "hide": 0,
-        "current": {}
-      },
-      {
-        "name": "slo_fetch_latency_ms",
-        "label": "SLO Fetch Latency (ms)",
-        "description": "Fetch latency SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
-        "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-        "query": {
-          "query": "label_values(kafka_odradek_messages_fetched_total{topic=\"10KB-TOPIC\"}, slo_fetch_latency_ms)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "sort": 0,
-        "includeAll": false,
-        "multi": false,
-        "hide": 0,
-        "current": {}
-      },
-      {
-        "name": "slo_e2e_message_age_ms",
-        "label": "SLO E2E Message Age (ms)",
-        "description": "E2E message age SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
-        "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-        "query": {
-          "query": "label_values(kafka_odradek_e2e_message_age_ms_count{topic=\"10KB-TOPIC\"}, slo_e2e_message_age_ms)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "sort": 0,
-        "includeAll": false,
-        "multi": false,
-        "hide": 0,
-        "current": {}
-      },
-      {
-        "name": "slo_full_e2e_ms",
-        "label": "SLO Full E2E (ms)",
-        "description": "Full E2E SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
-        "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-        "query": {
-          "query": "label_values(kafka_odradek_full_e2e_ms_count{topic=\"10KB-TOPIC\"}, slo_full_e2e_ms)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "sort": 0,
-        "includeAll": false,
-        "multi": false,
-        "hide": 0,
-        "current": {}
-      }
-    ]
+    "list": []
   },
   "time": { "from": "now-15m", "to": "now" },
   "timepicker": {},
@@ -130,7 +61,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_production_latency_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 80",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -170,7 +101,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_fetch_latency_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 500",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -210,7 +141,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_e2e_message_age_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 1000",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -250,7 +181,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_full_e2e_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool 1080",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -299,7 +230,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_production_latency_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 250",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -339,7 +270,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_fetch_latency_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 500",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -379,7 +310,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_e2e_message_age_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 1000",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -419,7 +350,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_full_e2e_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 1250",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -428,7 +359,7 @@
 
     {
       "type": "row",
-      "title": "Cluster 3 — local-3 (9MB)",
+      "title": "Cluster 3 — local-3 (9MB Observer — 5MB observer also running, see SLO Dashboard)",
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 20 },
       "id": 11,
       "collapsed": false,
@@ -468,7 +399,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_production_latency_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 800",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -508,7 +439,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_fetch_latency_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 1500",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -548,7 +479,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_e2e_message_age_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 3000",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }
@@ -588,7 +519,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_full_e2e_ms",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool 3800",
           "legendFormat": "{{topic}}",
           "refId": "A"
         }

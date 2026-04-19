@@ -41,7 +41,7 @@
       "volume-config": {
         "parallelism": 1,
         "messages-per-interval": 10,
-        "message-size-kb": 10
+        "message-size-kb": 1
       },
       "producer-config": {
         "acks": "all",
@@ -123,7 +123,7 @@
       "volume-config": {
         "parallelism": 1,
         "messages-per-interval": 10,
-        "message-size-kb": 10
+        "message-size-kb": 100
       },
       "producer-config": {
         "acks": "all",

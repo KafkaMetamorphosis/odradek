@@ -1,4 +1,3 @@
-version: '3'
 services:
   kafka-1:
     image: apache/kafka:latest
