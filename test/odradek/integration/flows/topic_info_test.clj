@@ -59,7 +59,7 @@
         (is (= "test-cluster" (get labels "cluster_name")))
         (is (= "ODRADEK-TEST-TOPIC" (get labels "topic")))
         (is (= "1" (get labels "partitions")))
-        ;; cleanup_policy and retention_ms are in the test observe-configs list
+        ;; cleanup_policy and retention_ms are in exposed-topic-config-keys
         (is (= "delete" (get labels "cleanup_policy")))
         (is (some? (get labels "retention_ms")))))))
 
@@ -141,7 +141,7 @@
         (is (some? parsed) "metric line for ODRADEK-TEST-TOPIC must be present")
         (is (= "test-cluster" (get (:labels parsed) "cluster_name")))
         (is (= "ODRADEK-TEST-TOPIC" (get (:labels parsed) "topic")))
-        ;; retention_ms is in the test observe-configs list, so it appears as a label
+        ;; retention_ms is in exposed-topic-config-keys, so it always appears as a label
         (is (some? (get (:labels parsed) "retention_ms")))))))
 
 ;; ---------------------------------------------------------------------------
@@ -168,7 +168,7 @@
           "kafka_odradek_topic_config must not appear for non-matching topic"))))
 
 ;; ---------------------------------------------------------------------------
-;; observe-configs: config key appears as label on kafka_odradek_topic_config
+;; exposed-topic-config-keys: config key appears as label on kafka_odradek_topic_config
 ;; ---------------------------------------------------------------------------
 
 (defflow observe-config-appears-as-label-on-topic-config-gauge
