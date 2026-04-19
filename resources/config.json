@@ -5,7 +5,7 @@
     "scrape-interval-ms": 30000
   },
   "kafka_clusters": {
-    "local-1": {"bootstrap-url": "localhost:9092"},
+    "local-1": {"bootstrap-url": "localhost:19092"},
     "local-2": {"bootstrap-url": "localhost:9094"},
     "local-3": {"bootstrap-url": "localhost:9096"}
   },

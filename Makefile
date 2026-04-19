@@ -10,9 +10,9 @@ unit:
 	lein test :odradek.unit
 
 integration:
-	docker-compose -f docker-compose.yaml up -d
+	docker-compose -f docker-compose.test.yaml up -d
 	lein test :odradek.integration
-	docker-compose -f docker-compose.yaml down
+	docker-compose -f docker-compose.test.yaml down
 
 test: unit integration
 

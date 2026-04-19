@@ -10,7 +10,7 @@
 
 ;; Each cluster owns a specific set of observer topics:
 ;;
-;;   local-1 (localhost:9092):
+;;   local-1 (localhost:19092):
 ;;     1KB-TOPIC                  4 partitions   (~10 KB/interval)
 ;;     10KB-TOPIC                 4 partitions   (~100 KB/interval)
 ;;     100KB-TOPIC                4 partitions   (~100 KB/interval)
