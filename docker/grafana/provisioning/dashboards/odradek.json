@@ -10,7 +10,11 @@
   "liveNow": false,
   "refresh": "10s",
   "schemaVersion": 39,
-  "tags": ["kafka", "odradek", "slo"],
+  "tags": [
+    "kafka",
+    "odradek",
+    "slo"
+  ],
   "templating": {
     "list": [
       {
@@ -18,7 +22,10 @@
         "label": "Cluster",
         "description": "Select the Kafka cluster to inspect SLOs for",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_messages_produced_total, cluster_name)",
           "refId": "StandardVariableQuery"
@@ -35,7 +42,10 @@
         "label": "Topic",
         "description": "Select which Kafka topic workload to inspect SLOs for",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_messages_produced_total, topic)",
           "refId": "StandardVariableQuery"
@@ -52,7 +62,10 @@
         "label": "SLO Production Latency (ms)",
         "description": "Production latency SLO threshold in milliseconds, read from the producer observer's custom-labels",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_messages_produced_total{cluster_name=~\"$cluster_name\", topic=\"$topic\"}, slo_production_latency_ms)",
           "refId": "StandardVariableQuery"
@@ -69,7 +82,10 @@
         "label": "SLO Fetch Latency (ms)",
         "description": "Fetch latency SLO threshold in milliseconds, read from the consumer observer's custom-labels",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_messages_fetched_total{cluster_name=~\"$cluster_name\", topic=\"$topic\"}, slo_fetch_latency_ms)",
           "refId": "StandardVariableQuery"
@@ -86,7 +102,10 @@
         "label": "SLO E2E Message Age (ms)",
         "description": "E2E message age SLO threshold in milliseconds, read from the consumer observer's custom-labels",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_e2e_message_age_ms_count{topic=\"$topic\"}, slo_e2e_message_age_ms)",
           "refId": "StandardVariableQuery"
@@ -103,7 +122,10 @@
         "label": "SLO Full E2E (ms)",
         "description": "Full E2E SLO threshold in milliseconds (produce + propagate + consume), read from the consumer observer's custom-labels",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_full_e2e_ms_count{topic=\"$topic\"}, slo_full_e2e_ms)",
           "refId": "StandardVariableQuery"
@@ -120,7 +142,10 @@
         "label": "SLO Percentile",
         "description": "Percentile used for the latency SLO (e.g. 99.5 means p99.5), read from the observer's custom-labels",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_messages_produced_total{cluster_name=~\"$cluster_name\", topic=\"$topic\"}, slo_latency_meta_ms)",
           "refId": "StandardVariableQuery"
@@ -137,7 +162,10 @@
         "label": "SLO Window (minutes)",
         "description": "Rate window in minutes for SLO evaluation, read from the observer's custom-labels",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "query": {
           "query": "label_values(kafka_odradek_messages_produced_total{cluster_name=~\"$cluster_name\", topic=\"$topic\"}, slo_latency_window_minutes)",
           "refId": "StandardVariableQuery"
@@ -151,7 +179,10 @@
       }
     ]
   },
-  "time": { "from": "now-15m", "to": "now" },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
   "title": "Odradek - Kafka SLO Dashboard",
@@ -162,7 +193,12 @@
     {
       "type": "row",
       "title": "SLO Compliance",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
       "id": 200,
       "collapsed": false,
       "panels": []
@@ -170,15 +206,27 @@
     {
       "type": "state-timeline",
       "title": "Production Latency SLO",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 1 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
       "id": 201,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -186,13 +234,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -200,25 +259,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"$slo_production_latency_ms\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"+Inf\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
       "title": "Fetch Latency SLO",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 1 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
       "id": 202,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -226,13 +302,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -240,25 +327,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"$slo_fetch_latency_ms\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"+Inf\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
       "title": "E2E Message Age SLO",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 1 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
       "id": 203,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -266,13 +370,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -280,25 +395,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"$slo_e2e_message_age_ms\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"+Inf\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
       "title": "Full E2E SLO",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 1 },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
       "id": 204,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -306,13 +438,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -320,27 +463,45 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"$slo_full_e2e_ms\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"+Inf\", cluster_name=~\"$cluster_name\", topic=~\"$topic\"}[$__rate_interval]))\n* 100",
           "legendFormat": "{{topic}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "row",
       "title": "SLO Status",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
       "id": 100,
       "collapsed": false,
       "panels": []
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "stat",
       "title": "SLO 1: Production Latency (p$slo_latency_meta_ms < $slo_production_latency_ms ms)",
       "description": "Fraction of $slo_latency_window_minutes-minute windows where p$slo_latency_meta_ms production latency is below the SLO threshold",
-      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 10 },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 10
+      },
       "id": 1,
       "fieldConfig": {
         "defaults": {
@@ -349,9 +510,18 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 99.5 },
-              { "color": "green", "value": 99.98 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 99.5
+              },
+              {
+                "color": "green",
+                "value": 99.98
+              }
             ]
           },
           "min": 95,
@@ -360,7 +530,13 @@
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "graphMode": "area",
         "colorMode": "background",
         "justifyMode": "auto",
@@ -377,11 +553,19 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "stat",
       "title": "SLO 2: Message Age (p$slo_latency_meta_ms < $slo_e2e_message_age_ms ms) & E2E (p$slo_latency_meta_ms < $slo_full_e2e_ms ms)",
       "description": "Fraction of $slo_latency_window_minutes-minute windows where p$slo_latency_meta_ms message age is below $slo_e2e_message_age_ms ms AND p$slo_latency_meta_ms full e2e is below $slo_full_e2e_ms ms",
-      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 10 },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 10
+      },
       "id": 2,
       "fieldConfig": {
         "defaults": {
@@ -390,9 +574,18 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 99 },
-              { "color": "green", "value": 99.5 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 99
+              },
+              {
+                "color": "green",
+                "value": 99.5
+              }
             ]
           },
           "min": 95,
@@ -401,7 +594,13 @@
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "graphMode": "area",
         "colorMode": "background",
         "justifyMode": "auto",
@@ -418,11 +617,19 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "stat",
       "title": "SLO 3: Error Rate (99.999%)",
       "description": "Target: 99.999% of messages succeed (production + fetch) for topic $topic",
-      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 10 },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 10
+      },
       "id": 3,
       "fieldConfig": {
         "defaults": {
@@ -431,9 +638,18 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 99.99 },
-              { "color": "green", "value": 99.999 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 99.99
+              },
+              {
+                "color": "green",
+                "value": 99.999
+              }
             ]
           },
           "min": 99,
@@ -442,7 +658,13 @@
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "graphMode": "area",
         "colorMode": "background",
         "justifyMode": "auto",
@@ -458,24 +680,38 @@
         }
       ]
     },
-
     {
       "type": "row",
       "title": "SLO 1 - Production Latency (p$slo_latency_meta_ms < $slo_production_latency_ms ms, window $slo_latency_window_minutes min)",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
       "id": 101,
       "collapsed": false,
       "panels": []
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
       "title": "p$slo_latency_meta_ms Production Latency vs SLO ($slo_production_latency_ms ms)",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 15 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 15
+      },
       "id": 10,
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -489,33 +725,79 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line+area" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
           },
           "unit": "ms",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 9007199254740991 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 9007199254740991
+              }
             ]
           }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "SLO Threshold" },
+            "matcher": {
+              "id": "byName",
+              "options": "SLO Threshold"
+            },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } },
-              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
-              { "id": "custom.lineWidth", "value": 2 },
-              { "id": "custom.fillOpacity", "value": 0 }
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
             ]
           }
         ]
       },
       "options": {
-        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -531,15 +813,26 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
       "title": "Production Latency SLO Compliance ($slo_latency_window_minutes min window)",
       "description": "100% when p$slo_latency_meta_ms < $slo_production_latency_ms ms, 0% otherwise",
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 15 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 15
+      },
       "id": 11,
       "fieldConfig": {
         "defaults": {
-          "color": { "fixedColor": "green", "mode": "fixed" },
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -553,8 +846,13 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
           },
           "unit": "percent",
           "min": 0,
@@ -562,16 +860,32 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "green", "value": 99.98 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 99.98
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -582,11 +896,19 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "gauge",
-      "title": "Error Budget Remaining — Production Latency",
+      "title": "Error Budget Remaining \u2014 Production Latency",
       "description": "Error budget for production latency SLO. 100% = full budget, 0% = exhausted. Target: 99.98% compliance.",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 15 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 15
+      },
       "id": 12,
       "fieldConfig": {
         "defaults": {
@@ -597,17 +919,35 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "orange", "value": 25 },
-              { "color": "yellow", "value": 50 },
-              { "color": "green", "value": 75 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 25
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 75
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
@@ -620,24 +960,38 @@
         }
       ]
     },
-
     {
       "type": "row",
       "title": "SLO 2 - Message Age (p$slo_latency_meta_ms < $slo_e2e_message_age_ms ms) & E2E (p$slo_latency_meta_ms < $slo_full_e2e_ms ms, window $slo_latency_window_minutes min)",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
       "id": 102,
       "collapsed": false,
       "panels": []
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
       "title": "p$slo_latency_meta_ms E2E Message Age vs SLO ($slo_e2e_message_age_ms ms)",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 24 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 24
+      },
       "id": 20,
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -651,33 +1005,79 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line+area" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
           },
           "unit": "ms",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 9007199254740991 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 9007199254740991
+              }
             ]
           }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "SLO Threshold" },
+            "matcher": {
+              "id": "byName",
+              "options": "SLO Threshold"
+            },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } },
-              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
-              { "id": "custom.lineWidth", "value": 2 },
-              { "id": "custom.fillOpacity", "value": 0 }
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
             ]
           }
         ]
       },
       "options": {
-        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -693,14 +1093,24 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
       "title": "p$slo_latency_meta_ms Full E2E Latency vs SLO ($slo_full_e2e_ms ms)",
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 24 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 24
+      },
       "id": 21,
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -714,33 +1124,79 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line+area" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
           },
           "unit": "ms",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 9007199254740991 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 9007199254740991
+              }
             ]
           }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "SLO Threshold" },
+            "matcher": {
+              "id": "byName",
+              "options": "SLO Threshold"
+            },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } },
-              { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } },
-              { "id": "custom.lineWidth", "value": 2 },
-              { "id": "custom.fillOpacity", "value": 0 }
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
             ]
           }
         ]
       },
       "options": {
-        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -756,15 +1212,26 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
       "title": "Message Age & E2E SLO Compliance ($slo_latency_window_minutes min window)",
       "description": "100% when p$slo_latency_meta_ms message age < $slo_e2e_message_age_ms ms AND p$slo_latency_meta_ms full e2e < $slo_full_e2e_ms ms",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 24 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 24
+      },
       "id": 22,
       "fieldConfig": {
         "defaults": {
-          "color": { "fixedColor": "green", "mode": "fixed" },
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -778,8 +1245,13 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
           },
           "unit": "percent",
           "min": 0,
@@ -787,16 +1259,32 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "green", "value": 99.5 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 99.5
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -806,24 +1294,39 @@
         }
       ]
     },
-
     {
       "type": "row",
       "title": "SLO 3 - Error Rate (99.999% target, $slo_latency_window_minutes min window)",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
       "id": 103,
       "collapsed": false,
       "panels": []
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
-      "title": "Production Error Rate — $topic",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 33 },
+      "title": "Production Error Rate \u2014 $topic",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 33
+      },
       "id": 30,
       "fieldConfig": {
         "defaults": {
-          "color": { "fixedColor": "red", "mode": "fixed" },
+          "color": {
+            "fixedColor": "red",
+            "mode": "fixed"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -837,23 +1340,45 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line+area" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
           },
           "unit": "ops",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "transparent", "value": null },
-              { "color": "red", "value": 0.00001 }
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1e-05
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -864,14 +1389,25 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
-      "title": "Fetch Error Rate — $topic",
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 33 },
+      "title": "Fetch Error Rate \u2014 $topic",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 33
+      },
       "id": 31,
       "fieldConfig": {
         "defaults": {
-          "color": { "fixedColor": "red", "mode": "fixed" },
+          "color": {
+            "fixedColor": "red",
+            "mode": "fixed"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -885,23 +1421,45 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line+area" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
           },
           "unit": "ops",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "transparent", "value": null },
-              { "color": "red", "value": 0.00001 }
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1e-05
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -912,15 +1470,26 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
       "title": "Error SLO Compliance ($slo_latency_window_minutes min window)",
       "description": "Combined production + fetch error SLO for topic $topic. Target: 99.999%",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 33 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 33
+      },
       "id": 32,
       "fieldConfig": {
         "defaults": {
-          "color": { "fixedColor": "green", "mode": "fixed" },
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -934,8 +1503,13 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "line" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
           },
           "unit": "percent",
           "decimals": 4,
@@ -944,16 +1518,32 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "green", "value": 99.999 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 99.999
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "legend": { "calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -963,24 +1553,38 @@
         }
       ]
     },
-
     {
       "type": "row",
       "title": "Throughput (informational)",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 41 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
       "id": 104,
       "collapsed": false,
       "panels": []
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
-      "title": "Messages Produced/sec — $topic",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 42 },
+      "title": "Messages Produced/sec \u2014 $topic",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 42
+      },
       "id": 40,
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -994,15 +1598,29 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
           },
           "unit": "ops"
         },
         "overrides": []
       },
       "options": {
-        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -1013,14 +1631,24 @@
       ]
     },
     {
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "type": "timeseries",
-      "title": "Messages Fetched/sec — $topic",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 42 },
+      "title": "Messages Fetched/sec \u2014 $topic",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 42
+      },
       "id": 41,
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
@@ -1034,15 +1662,29 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" }
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
           },
           "unit": "ops"
         },
         "overrides": []
       },
       "options": {
-        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom" },
-        "tooltip": { "mode": "multi", "sort": "desc" }
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {

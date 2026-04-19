@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -8,37 +10,62 @@
   "liveNow": false,
   "refresh": "10s",
   "schemaVersion": 39,
-  "tags": ["kafka", "odradek", "slo", "cluster-overview"],
+  "tags": [
+    "kafka",
+    "odradek",
+    "slo",
+    "cluster-overview"
+  ],
   "templating": {
     "list": []
   },
-  "time": { "from": "now-15m", "to": "now" },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Odradek — SLO Overview per Cluster",
+  "title": "Odradek \u2014 SLO Overview per Cluster",
   "uid": "odradek-slo-cluster-overview",
   "version": 1,
   "panels": [
     {
       "type": "row",
-      "title": "Cluster 1 — local-1 (10KB)",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "title": "Cluster 1 \u2014 local-1 (10KB)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
       "id": 1,
       "collapsed": false,
       "panels": []
     },
     {
       "type": "state-timeline",
-      "title": "Production Latency SLO — local-1",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 1 },
+      "title": "Production Latency SLO \u2014 local-1",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
       "id": 2,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -46,13 +73,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -60,25 +98,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"80\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Production Latency SLO \u2014 local-1",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "Fetch Latency SLO — local-1",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 1 },
+      "title": "Fetch Latency SLO \u2014 local-1",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
       "id": 3,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -86,13 +141,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -100,25 +166,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"500\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Fetch Latency SLO \u2014 local-1",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "E2E Message Age SLO — local-1",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 1 },
+      "title": "E2E Message Age SLO \u2014 local-1",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
       "id": 4,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -126,13 +209,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -140,25 +234,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"1000\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "E2E Message Age SLO \u2014 local-1",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "Full E2E SLO — local-1",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 1 },
+      "title": "Full E2E SLO \u2014 local-1",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
       "id": 5,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -166,13 +277,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -180,34 +302,55 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"1500\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"+Inf\", cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Full E2E SLO \u2014 local-1",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
-
     {
       "type": "row",
-      "title": "Cluster 2 — local-2 (1MB)",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 },
+      "title": "Cluster 2 \u2014 local-2 (1MB)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
       "id": 6,
       "collapsed": false,
       "panels": []
     },
     {
       "type": "state-timeline",
-      "title": "Production Latency SLO — local-2",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 11 },
+      "title": "Production Latency SLO \u2014 local-2",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 11
+      },
       "id": 7,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -215,13 +358,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -229,25 +383,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"250\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Production Latency SLO \u2014 local-2",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "Fetch Latency SLO — local-2",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 11 },
+      "title": "Fetch Latency SLO \u2014 local-2",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 11
+      },
       "id": 8,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -255,13 +426,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -269,25 +451,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"500\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Fetch Latency SLO \u2014 local-2",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "E2E Message Age SLO — local-2",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 11 },
+      "title": "E2E Message Age SLO \u2014 local-2",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 11
+      },
       "id": 9,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -295,13 +494,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -309,25 +519,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"1000\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "E2E Message Age SLO \u2014 local-2",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "Full E2E SLO — local-2",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 11 },
+      "title": "Full E2E SLO \u2014 local-2",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 11
+      },
       "id": 10,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -335,13 +562,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -349,34 +587,55 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"1500\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"+Inf\", cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Full E2E SLO \u2014 local-2",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
-
     {
       "type": "row",
-      "title": "Cluster 3 — local-3 (9MB Observer — 5MB observer also running, see SLO Dashboard)",
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 20 },
+      "title": "Cluster 3 \u2014 local-3 (9MB Observer \u2014 5MB observer also running, see SLO Dashboard)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
       "id": 11,
       "collapsed": false,
       "panels": []
     },
     {
       "type": "state-timeline",
-      "title": "Production Latency SLO — local-3",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 21 },
+      "title": "Production Latency SLO \u2014 local-3",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 21
+      },
       "id": 12,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -384,13 +643,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -398,25 +668,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"800\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_production_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Production Latency SLO \u2014 local-3",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "Fetch Latency SLO — local-3",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 21 },
+      "title": "Fetch Latency SLO \u2014 local-3",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 21
+      },
       "id": 13,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -424,13 +711,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -438,25 +736,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"1500\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_messages_fetch_latency_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Fetch Latency SLO \u2014 local-3",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "E2E Message Age SLO — local-3",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 21 },
+      "title": "E2E Message Age SLO \u2014 local-3",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 21
+      },
       "id": 14,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -464,13 +779,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -478,25 +804,42 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"3000\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_e2e_message_age_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "E2E Message Age SLO \u2014 local-3",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     },
     {
       "type": "state-timeline",
-      "title": "Full E2E SLO — local-3",
-      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 21 },
+      "title": "Full E2E SLO \u2014 local-3",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 21
+      },
       "id": 15,
       "options": {
         "mergeValues": false,
         "showValue": "auto",
         "alignValue": "center",
         "rowHeight": 0.9,
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        }
       },
       "fieldConfig": {
         "defaults": {
@@ -504,13 +847,24 @@
           "min": 0,
           "max": 100,
           "mappings": [],
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 90 },
-              { "color": "green", "value": 99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 99
+              }
             ]
           }
         },
@@ -518,10 +872,15 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "expr": "sum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"4000\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n/\nsum(rate(kafka_odradek_full_e2e_ms_bucket{le=\"+Inf\", cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval]))\n* 100",
-          "legendFormat": "{{topic}}",
-          "refId": "A"
+          "legendFormat": "Full E2E SLO \u2014 local-3",
+          "refId": "A",
+          "instant": false,
+          "range": true
         }
       ]
     }
