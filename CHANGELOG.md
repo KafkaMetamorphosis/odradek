@@ -10,3 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - CI/CD: Docker images are now built and pushed only on semver git tags, not on every commit to main.
 - Docker image tags follow semver convention (`1.2.3`, `1.2`, `1`, `latest`).
+
+[Unreleased]: https://github.com/KafkaMetamorphosis/odradek/compare/HEAD...HEAD
