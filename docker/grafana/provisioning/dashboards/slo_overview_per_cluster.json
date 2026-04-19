@@ -1,0 +1,598 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["kafka", "odradek", "slo", "cluster-overview"],
+  "templating": {
+    "list": [
+      {
+        "name": "slo_production_latency_ms",
+        "label": "SLO Production Latency (ms)",
+        "description": "Production latency SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "query": {
+          "query": "label_values(kafka_odradek_messages_produced_total{topic=\"10KB-TOPIC\"}, slo_production_latency_ms)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 0,
+        "includeAll": false,
+        "multi": false,
+        "hide": 0,
+        "current": {}
+      },
+      {
+        "name": "slo_fetch_latency_ms",
+        "label": "SLO Fetch Latency (ms)",
+        "description": "Fetch latency SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "query": {
+          "query": "label_values(kafka_odradek_messages_fetched_total{topic=\"10KB-TOPIC\"}, slo_fetch_latency_ms)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 0,
+        "includeAll": false,
+        "multi": false,
+        "hide": 0,
+        "current": {}
+      },
+      {
+        "name": "slo_e2e_message_age_ms",
+        "label": "SLO E2E Message Age (ms)",
+        "description": "E2E message age SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "query": {
+          "query": "label_values(kafka_odradek_e2e_message_age_ms_count{topic=\"10KB-TOPIC\"}, slo_e2e_message_age_ms)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 0,
+        "includeAll": false,
+        "multi": false,
+        "hide": 0,
+        "current": {}
+      },
+      {
+        "name": "slo_full_e2e_ms",
+        "label": "SLO Full E2E (ms)",
+        "description": "Full E2E SLO threshold in milliseconds (sourced from cluster-1 10KB-TOPIC observer)",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+        "query": {
+          "query": "label_values(kafka_odradek_full_e2e_ms_count{topic=\"10KB-TOPIC\"}, slo_full_e2e_ms)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 0,
+        "includeAll": false,
+        "multi": false,
+        "hide": 0,
+        "current": {}
+      }
+    ]
+  },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Odradek — SLO Overview per Cluster",
+  "uid": "odradek-slo-cluster-overview",
+  "version": 1,
+  "panels": [
+    {
+      "type": "row",
+      "title": "Cluster 1 — local-1 (10KB)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "state-timeline",
+      "title": "Production Latency SLO — local-1",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 1 },
+      "id": 2,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_production_latency_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "Fetch Latency SLO — local-1",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 1 },
+      "id": 3,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_fetch_latency_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "E2E Message Age SLO — local-1",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 1 },
+      "id": 4,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_e2e_message_age_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "Full E2E SLO — local-1",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 1 },
+      "id": 5,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-1\", topic=\"10KB-TOPIC\"}[$__rate_interval])) > bool $slo_full_e2e_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Cluster 2 — local-2 (1MB)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 },
+      "id": 6,
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "state-timeline",
+      "title": "Production Latency SLO — local-2",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 11 },
+      "id": 7,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_production_latency_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "Fetch Latency SLO — local-2",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 11 },
+      "id": 8,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_fetch_latency_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "E2E Message Age SLO — local-2",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 11 },
+      "id": 9,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_e2e_message_age_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "Full E2E SLO — local-2",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 11 },
+      "id": 10,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-2\", topic=\"1MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_full_e2e_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "type": "row",
+      "title": "Cluster 3 — local-3 (9MB)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 20 },
+      "id": 11,
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "state-timeline",
+      "title": "Production Latency SLO — local-3",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 21 },
+      "id": 12,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_production_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_production_latency_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "Fetch Latency SLO — local-3",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 21 },
+      "id": 13,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_messages_fetch_latency_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_fetch_latency_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "E2E Message Age SLO — local-3",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 21 },
+      "id": 14,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_e2e_message_age_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_e2e_message_age_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "state-timeline",
+      "title": "Full E2E SLO — local-3",
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 21 },
+      "id": 15,
+      "options": {
+        "mergeValues": false,
+        "showValue": "auto",
+        "alignValue": "center",
+        "rowHeight": 0.9,
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "PASS", "color": "green", "index": 0 } } },
+            { "type": "value", "options": { "1": { "text": "FAIL", "color": "red", "index": 1 } } },
+            { "type": "special", "options": { "match": "nan", "result": { "text": "UNKNOWN", "color": "grey", "index": 2 } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_full_e2e_ms_bucket{cluster_name=\"local-3\", topic=\"9MB-MESSAGES-SMALL-TOPIC\"}[$__rate_interval])) > bool $slo_full_e2e_ms",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

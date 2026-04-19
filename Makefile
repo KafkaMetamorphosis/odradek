@@ -1,31 +1,18 @@
-SERVICES := kafka
-
-.PHONY: run-deps stop-deps create-test-topic unit integration test run seed
+.PHONY: run-deps stop-deps unit integration test run seed
 
 run-deps:
-	@all_running=true; \
-	for svc in $(SERVICES); do \
-		status=$$(docker-compose ps --status running --services 2>/dev/null | grep -x "$$svc"); \
-		if [ -z "$$status" ]; then \
-			all_running=false; \
-			break; \
-		fi; \
-	done; \
-	if [ "$$all_running" = true ]; then \
-		echo "Dependencies already running"; \
-	else \
-		echo "Starting dependencies..."; \
-		docker-compose up -d; \
-	fi
+	docker-compose -f docker-compose.local.yml up -d
 
 stop-deps:
-	docker-compose down
+	docker-compose -f docker-compose.local.yml down
 
 unit:
 	lein test :odradek.unit
 
-integration: run-deps
+integration:
+	docker-compose up -d
 	lein test :odradek.integration
+	docker-compose down
 
 test: unit integration
 
