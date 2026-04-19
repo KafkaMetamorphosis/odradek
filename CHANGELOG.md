@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Grafana state timeline panels: replaced bucket-ratio PromQL with histogram_quantile <= bool pattern to fix "Data does not have a time field" error caused by le label format mismatch (integer vs float)
 
 ### Changed
-- Kafka broker defaults set to 5-minute retention (`retention.ms=300000`) and 50 MB cap (`retention.bytes=52428800`) in both `docker-compose.local.yml` and `docker-compose.test.yaml`
+- Kafka broker defaults set to 5-minute retention (`retention.ms=300000`) and 50 MB per partition (`retention.bytes=52428800`) in both `docker-compose.local.yml` and `docker-compose.test.yaml`
 - Seed script topic retention corrected from 15 minutes (`900000 ms`) to 5 minutes (`300000 ms`) to match broker defaults
 - `Makefile`: `run-deps`/`stop-deps` use `docker-compose.local.yml`; `integration` target now uses `docker-compose.test.yaml` (renamed)
 - `docker-compose.local.yml`: kafka-1 host port changed from 9092 to 19092 to avoid collision with the test broker on port 9092
