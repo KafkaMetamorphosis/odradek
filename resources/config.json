@@ -12,15 +12,7 @@
       "name": "topic-config",
       "clusters": ["local-1"],
       "observer-type": "topic-info",
-      "topics-filter": ".*",
-      "observe-configs": [
-        "min.insync.replicas",
-        "retention.ms",
-        "retention.bytes",
-        "cleanup.policy",
-        "max.message.bytes",
-        "compression.type"
-      ]
+      "topics-filter": ".*"
     },
     {
       "name": "1kb-messages-small-topic-producer",

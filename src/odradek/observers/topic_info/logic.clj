@@ -1,10 +1,7 @@
 (ns odradek.observers.topic-info.logic
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [odradek.observers.topic-info.config-keys :as config-keys]))
 
-
-(def numeric-config-keys
-  "Set of Kafka topic config keys whose values are numeric and exposed as individual gauges."
-  #{"retention.ms" "retention.bytes" "min.insync.replicas" "max.message.bytes"})
 
 (defn build-partitions-broker-ids [topic-description]
   (string/join ";" (reduce (fn [acc partition]
@@ -43,45 +40,18 @@
    :partitions_leader_broker_ids (build-partitions-leader-broker-id topic-description)
    :partitions_replicas_broker_racks (build-partitions-replicas-racks topic-description)})
 
-(defn- all-observe-configs->label-map
-  "Extracts the fixed set of observe-config values from a Kafka Config object as labels.
-   Returns a map of sanitized keyword (underscore) to string value for all six standard
-   observe-config keys. This drives the label values for the kafka_odradek_topic_config gauge."
+(defn- topic-configs->label-map
+  "Extracts all keys in exposed-topic-config-keys from a Kafka Config object as labels.
+   Returns a map of sanitized keyword (underscore) to string value.
+   Keys absent from the Config object return empty string."
   [config]
-  (letfn [(config-value [config-key]
-            (.value (.get config config-key)))]
-    {:min_insync_replicas (config-value "min.insync.replicas")
-     :retention_ms        (config-value "retention.ms")
-     :retention_bytes     (config-value "retention.bytes")
-     :cleanup_policy      (config-value "cleanup.policy")
-     :max_message_bytes   (config-value "max.message.bytes")
-     :compression_type    (config-value "compression.type")}))
-
-(defn classify-observe-configs
-  "Splits observe-configs into numeric and string categories.
-   Numeric keys are those present in numeric-config-keys; all others are strings.
-   Returns {:numeric [...] :string [...]} preserving original config key strings."
-  [observe-configs]
-  (reduce (fn [classification config-key]
-            (if (contains? numeric-config-keys config-key)
-              (update classification :numeric conj config-key)
-              (update classification :string conj config-key)))
-          {:numeric [] :string []}
-          observe-configs))
-
-(defn config->label-map
-  "Extracts string-classified observe-configs from a Kafka Config object as labels.
-   Only iterates over the string-classified keys in observe-configs.
-   Returns a map of sanitized-key (underscore) to string value.
-   If a key is absent from the Config, uses empty string."
-  [config string-observe-configs]
   (into {}
     (map (fn [config-key]
            (let [config-entry (.get config config-key)
                  label-key    (keyword (string/replace config-key #"[\.\-]" "_"))
-                 label-value  (if (some? config-entry) (.value config-entry) "")]
+                 label-value  (if (some? config-entry) (or (.value config-entry) "") "")]
              [label-key label-value]))
-         string-observe-configs)))
+         config-keys/exposed-topic-config-keys)))
 
 (defn build-label-values
   "Combines cluster name, topic, topic description, and config into the full
@@ -91,7 +61,7 @@
   (merge {:cluster_name cluster-name
           :topic        topic}
          (topic-description->label-map topic-description)
-         (all-observe-configs->label-map config)))
+         (topic-configs->label-map config)))
 
 ;;
 ;; Numeric gauge extraction — used by the per-metric numeric gauges
@@ -114,16 +84,3 @@
    A value below replication-factor indicates an under-replicated partition."
   [topic-description]
   (.size (.isr (first (.partitions topic-description)))))
-
-(defn extract-numeric-config-value
-  "Parses the numeric value of a Kafka config key from a Config object.
-   Returns the value as a Long. Returns -1 if the key is absent or the value
-   cannot be parsed as a Long."
-  [config config-key]
-  (let [config-entry (.get config config-key)]
-    (if (some? config-entry)
-      (try
-        (Long/parseLong (.value config-entry))
-        (catch NumberFormatException _
-          -1))
-      -1)))
