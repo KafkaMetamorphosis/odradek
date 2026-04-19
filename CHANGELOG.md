@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Grafana dashboards: removed all references to non-existent metrics (`kafka_odradek_topic_partitions`, `kafka_odradek_topic_replication_factor`, `kafka_odradek_topic_min_isr`) and replaced them with queries on `kafka_odradek_topic_config`
 - Grafana state timeline panels: replaced boolean PASS/FAIL (`> bool N`) with SLO compliance percentage (0–100%) using `rate(bucket{le=...}) / rate(bucket{le="+Inf"}) * 100`
+- Kafka broker logs now stored in Docker named volumes (kafka-1-data, kafka-2-data, kafka-3-data) to prevent disk exhaustion in /tmp
+- Grafana state timeline panels: replaced bucket-ratio PromQL with histogram_quantile <= bool pattern to fix "Data does not have a time field" error caused by le label format mismatch (integer vs float)
 
 ### Changed
 - `Makefile`: `run-deps`/`stop-deps` use `docker-compose.local.yml`; `integration` target now uses `docker-compose.test.yaml` (renamed)

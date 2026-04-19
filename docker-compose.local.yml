@@ -20,6 +20,9 @@ services:
         KAFKA_NUM_PARTITIONS: 1
         KAFKA_MESSAGE_MAX_BYTES: 11534336
         KAFKA_REPLICA_FETCH_MAX_BYTES: 11534336
+        KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-1-data:/var/lib/kafka/data
 
   kafka-2:
     image: apache/kafka:latest
@@ -42,6 +45,9 @@ services:
         KAFKA_NUM_PARTITIONS: 1
         KAFKA_MESSAGE_MAX_BYTES: 11534336
         KAFKA_REPLICA_FETCH_MAX_BYTES: 11534336
+        KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-2-data:/var/lib/kafka/data
 
   kafka-3:
     image: apache/kafka:latest
@@ -64,6 +70,9 @@ services:
         KAFKA_NUM_PARTITIONS: 1
         KAFKA_MESSAGE_MAX_BYTES: 11534336
         KAFKA_REPLICA_FETCH_MAX_BYTES: 11534336
+        KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-3-data:/var/lib/kafka/data
 
   prometheus:
     image: prom/prometheus:v2.51.0
@@ -87,3 +96,8 @@ services:
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
     depends_on:
       - prometheus
+
+volumes:
+  kafka-1-data:
+  kafka-2-data:
+  kafka-3-data:
