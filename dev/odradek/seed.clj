@@ -8,18 +8,24 @@
            [org.apache.kafka.clients.admin NewTopic]
            [org.apache.kafka.common.errors TopicExistsException]))
 
-;; Partition counts are assigned based on relative throughput derived from each
-;; topic's observer volume-config (message-size-kb * messages-per-interval):
+;; Each cluster owns a specific set of observer topics:
 ;;
-;;   1KB-TOPIC                  4 partitions   (~10 KB/interval)
-;;   10KB-TOPIC                 4 partitions   (~100 KB/interval)
-;;   100KB-TOPIC                4 partitions   (~100 KB/interval)
-;;   1MB-MESSAGES-SMALL-TOPIC  16 partitions  (~3072 KB/interval)
-;;   9MB-MESSAGES-SMALL-TOPIC  64 partitions  (~9216 KB/interval)
-;;   5MB-MESSAGES-SMALL-TOPIC 128 partitions  (~10240 KB/interval)
+;;   local-1 (localhost:19092):
+;;     1KB-TOPIC                  4 partitions   (~10 KB/interval)
+;;     10KB-TOPIC                 4 partitions   (~100 KB/interval)
+;;     100KB-TOPIC                4 partitions   (~100 KB/interval)
+;;     + 800 random topics
 ;;
-;; Each topic is created exactly once with its assigned partition count.
-;; No suffixes are appended — topic names match config.json exactly.
+;;   local-2 (localhost:9094):
+;;     1MB-MESSAGES-SMALL-TOPIC  16 partitions  (~3072 KB/interval)
+;;
+;;   local-3 (localhost:9096):
+;;     5MB-MESSAGES-SMALL-TOPIC 128 partitions  (~10240 KB/interval)
+;;     9MB-MESSAGES-SMALL-TOPIC  64 partitions  (~9216 KB/interval)
+;;
+;; Partition counts are derived from relative throughput.
+;; Topic names match config.json exactly — no suffixes appended.
+
 (def ^:private topic-partition-assignments
   {"1KB-TOPIC"                4
    "10KB-TOPIC"               4
@@ -37,12 +43,6 @@
 (defn- load-config []
   (with-open [config-reader (io/reader (io/resource "config.json"))]
     (json/parse-stream config-reader true)))
-
-(defn- extract-unique-topic-names [observers]
-  (->> observers
-       (keep :topic)
-       distinct
-       vec))
 
 (defn- partition-count-for-topic [topic-name]
   (or (get topic-partition-assignments topic-name)
@@ -88,20 +88,39 @@
           (log/infof "Topic already exists, skipping: %s" topic-name)
           (throw execution-exception))))))
 
-(defn -main [& _args]
-  (log/info "Starting Odradek topic seed...")
-  (let [config             (load-config)
-        bootstrap-url      (get-in config [:kafka_clusters :local-1 :bootstrap-url])
-        unique-topic-names (extract-unique-topic-names (:observers config))
+(defn- seed-cluster-1! [bootstrap-url]
+  (log/infof "Seeding cluster local-1 at %s..." bootstrap-url)
+  (let [cluster-1-topics ["1KB-TOPIC" "10KB-TOPIC" "100KB-TOPIC"]
         random-topic-names (generate-random-topic-names random-topic-count)]
-    (log/infof "Bootstrap URL: %s" bootstrap-url)
-    (log/infof "Seeding %d observer topics and %d random topics..."
-               (count unique-topic-names)
-               (count random-topic-names))
     (with-open [admin-client (kafka-client/new-admin-client bootstrap-url)]
-      (doseq [topic-name unique-topic-names]
+      (doseq [topic-name cluster-1-topics]
         (create-topic-or-skip! admin-client topic-name))
       (doseq [topic-name random-topic-names]
         (create-random-topic-or-skip! admin-client topic-name))))
-  (log/info "Seed complete.")
+  (log/infof "Cluster local-1 seed complete (%d observer topics + %d random topics)."
+             3 random-topic-count))
+
+(defn- seed-cluster-2! [bootstrap-url]
+  (log/infof "Seeding cluster local-2 at %s..." bootstrap-url)
+  (with-open [admin-client (kafka-client/new-admin-client bootstrap-url)]
+    (create-topic-or-skip! admin-client "1MB-MESSAGES-SMALL-TOPIC"))
+  (log/info "Cluster local-2 seed complete."))
+
+(defn- seed-cluster-3! [bootstrap-url]
+  (log/infof "Seeding cluster local-3 at %s..." bootstrap-url)
+  (with-open [admin-client (kafka-client/new-admin-client bootstrap-url)]
+    (create-topic-or-skip! admin-client "5MB-MESSAGES-SMALL-TOPIC")
+    (create-topic-or-skip! admin-client "9MB-MESSAGES-SMALL-TOPIC"))
+  (log/info "Cluster local-3 seed complete."))
+
+(defn -main [& _args]
+  (log/info "Starting Odradek topic seed across all 3 clusters...")
+  (let [config        (load-config)
+        cluster-1-url (get-in config [:kafka_clusters :local-1 :bootstrap-url])
+        cluster-2-url (get-in config [:kafka_clusters :local-2 :bootstrap-url])
+        cluster-3-url (get-in config [:kafka_clusters :local-3 :bootstrap-url])]
+    (seed-cluster-1! cluster-1-url)
+    (seed-cluster-2! cluster-2-url)
+    (seed-cluster-3! cluster-3-url))
+  (log/info "All cluster seeds complete.")
   (System/exit 0))

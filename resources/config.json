@@ -5,12 +5,26 @@
     "scrape-interval-ms": 30000
   },
   "kafka_clusters": {
-    "local-1": {"bootstrap-url": "localhost:9092"}
+    "local-1": {"bootstrap-url": "localhost:19092"},
+    "local-2": {"bootstrap-url": "localhost:9094"},
+    "local-3": {"bootstrap-url": "localhost:9096"}
   },
   "observers": [
     {
-      "name": "topic-config",
+      "name": "topic-config-local-1",
       "clusters": ["local-1"],
+      "observer-type": "topic-info",
+      "topics-filter": ".*"
+    },
+    {
+      "name": "topic-config-local-2",
+      "clusters": ["local-2"],
+      "observer-type": "topic-info",
+      "topics-filter": ".*"
+    },
+    {
+      "name": "topic-config-local-3",
+      "clusters": ["local-3"],
       "observer-type": "topic-info",
       "topics-filter": ".*"
     },
@@ -27,7 +41,7 @@
       "volume-config": {
         "parallelism": 1,
         "messages-per-interval": 10,
-        "message-size-kb": 10
+        "message-size-kb": 1
       },
       "producer-config": {
         "acks": "all",
@@ -109,7 +123,7 @@
       "volume-config": {
         "parallelism": 1,
         "messages-per-interval": 10,
-        "message-size-kb": 10
+        "message-size-kb": 100
       },
       "producer-config": {
         "acks": "all",
@@ -139,7 +153,7 @@
     },
     {
       "name": "1mb-messages-small-topic-producer",
-      "clusters": ["local-1"],
+      "clusters": ["local-2"],
       "topic": "1MB-MESSAGES-SMALL-TOPIC",
       "observer-type": "producer",
       "volume-config": {
@@ -163,7 +177,7 @@
     },
     {
       "name": "1mb-messages-small-topic-consumer",
-      "clusters": ["local-1"],
+      "clusters": ["local-2"],
       "topic": "1MB-MESSAGES-SMALL-TOPIC",
       "observer-type": "consumer",
       "custom-labels": {
@@ -183,7 +197,7 @@
     },
     {
       "name": "5mb-messages-small-topic-producer",
-      "clusters": ["local-1"],
+      "clusters": ["local-3"],
       "topic": "5MB-MESSAGES-SMALL-TOPIC",
       "observer-type": "producer",
       "volume-config": {
@@ -207,7 +221,7 @@
     },
     {
       "name": "5mb-messages-small-topic-consumer",
-      "clusters": ["local-1"],
+      "clusters": ["local-3"],
       "topic": "5MB-MESSAGES-SMALL-TOPIC",
       "observer-type": "consumer",
       "custom-labels": {
@@ -227,7 +241,7 @@
     },
     {
       "name": "9mb-messages-small-topic-producer",
-      "clusters": ["local-1"],
+      "clusters": ["local-3"],
       "topic": "9MB-MESSAGES-SMALL-TOPIC",
       "observer-type": "producer",
       "volume-config": {
@@ -251,7 +265,7 @@
     },
     {
       "name": "9mb-messages-small-topic-consumer",
-      "clusters": ["local-1"],
+      "clusters": ["local-3"],
       "topic": "9MB-MESSAGES-SMALL-TOPIC",
       "custom-labels": {
         "slo-fetch-latency-ms": 1500,

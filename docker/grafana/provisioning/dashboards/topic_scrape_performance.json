@@ -26,8 +26,8 @@
         },
         "refresh": 2,
         "sort": 1,
-        "includeAll": false,
-        "multi": false,
+        "includeAll": true,
+        "multi": true,
         "hide": 0,
         "current": {}
       }
@@ -80,7 +80,7 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=\"$cluster_name\"}[5m]))",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=~\"$cluster_name\"}[5m]))",
           "legendFormat": "p99 Scrape Duration",
           "refId": "A",
           "instant": true
@@ -123,17 +123,17 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=\"$cluster_name\"}[5m]))",
+          "expr": "histogram_quantile(0.50, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=~\"$cluster_name\"}[5m]))",
           "legendFormat": "p50",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.95, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=\"$cluster_name\"}[5m]))",
+          "expr": "histogram_quantile(0.95, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=~\"$cluster_name\"}[5m]))",
           "legendFormat": "p95",
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=\"$cluster_name\"}[5m]))",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_scrape_duration_seconds_bucket{cluster_name=~\"$cluster_name\"}[5m]))",
           "legendFormat": "p99",
           "refId": "C"
         }
@@ -169,7 +169,7 @@
       },
       "targets": [
         {
-          "expr": "sum(kafka_odradek_topic_scrape_errors_total{cluster_name=\"$cluster_name\"})",
+          "expr": "sum(kafka_odradek_topic_scrape_errors_total{cluster_name=~\"$cluster_name\"})",
           "legendFormat": "Total Scrape Errors",
           "refId": "A",
           "instant": true
@@ -221,17 +221,17 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_list_duration_seconds_bucket{cluster_name=\"$cluster_name\"}[5m]))",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_list_duration_seconds_bucket{cluster_name=~\"$cluster_name\"}[5m]))",
           "legendFormat": "List Topics",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_describe_duration_seconds_bucket{cluster_name=\"$cluster_name\"}[5m]))",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_describe_duration_seconds_bucket{cluster_name=~\"$cluster_name\"}[5m]))",
           "legendFormat": "Describe Topics",
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_config_describe_duration_seconds_bucket{cluster_name=\"$cluster_name\"}[5m]))",
+          "expr": "histogram_quantile(0.99, rate(kafka_odradek_topic_config_describe_duration_seconds_bucket{cluster_name=~\"$cluster_name\"}[5m]))",
           "legendFormat": "Describe Configs",
           "refId": "C"
         }
@@ -273,7 +273,7 @@
       },
       "targets": [
         {
-          "expr": "rate(kafka_odradek_topic_scrape_errors_total{cluster_name=\"$cluster_name\"}[5m])",
+          "expr": "rate(kafka_odradek_topic_scrape_errors_total{cluster_name=~\"$cluster_name\"}[5m])",
           "legendFormat": "{{step}}",
           "refId": "A"
         }
@@ -317,7 +317,7 @@
       },
       "targets": [
         {
-          "expr": "count(kafka_odradek_topic_partitions{cluster_name=\"$cluster_name\"})",
+          "expr": "count(kafka_odradek_topic_config{cluster_name=~\"$cluster_name\"})",
           "legendFormat": "Topics Tracked",
           "refId": "A",
           "instant": true
@@ -360,7 +360,7 @@
       },
       "targets": [
         {
-          "expr": "count(kafka_odradek_topic_partitions{cluster_name=\"$cluster_name\"})",
+          "expr": "count(kafka_odradek_topic_config{cluster_name=~\"$cluster_name\"})",
           "legendFormat": "Topics Tracked",
           "refId": "A"
         }
