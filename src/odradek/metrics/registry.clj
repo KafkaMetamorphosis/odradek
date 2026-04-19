@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [odradek.observers.topic-info.logic :as topic-info-logic])
+            [odradek.observers.topic-info.config-keys :as config-keys])
   (:import [io.prometheus.metrics.core.metrics Counter Gauge Histogram]
            [io.prometheus.metrics.model.registry PrometheusRegistry]
            [io.prometheus.metrics.expositionformats ExpositionFormats]
@@ -100,14 +100,14 @@
    exposed-topic-config-keys. Computed once at load time."
   (into-array String
     (concat default-topic-config-label-names
-            (map sanitize-label-name topic-info-logic/exposed-topic-config-keys))))
+            (map sanitize-label-name config-keys/exposed-topic-config-keys))))
 
 (def ^:private topic-config-ordered-label-names
   "Ordered vector of all label name strings for the topic-config gauge,
    matching topic-config-label-names. Used by set-topic-config! to build
    the positional values array."
   (vec (concat default-topic-config-label-names
-               (map sanitize-label-name topic-info-logic/exposed-topic-config-keys))))
+               (map sanitize-label-name config-keys/exposed-topic-config-keys))))
 
 
 (defrecord MetricsRegistryComponent [config registry metrics custom-label-keys]
@@ -205,7 +205,8 @@
 (defn set-topic-config!
   "Sets the kafka_odradek_topic_config gauge to 1.0 for the given label-map.
    Label values are extracted in the same order as the registered label names:
-   default-topic-config-label-names first, then sanitized observe-configs keys.
+   default-topic-config-label-names first, then sanitized config key label names
+   from exposed-topic-config-keys.
    label-map must have keyword keys matching each label name."
   [metrics-registry label-map]
   (let [ordered-label-names (:topic-config-label-names metrics-registry)

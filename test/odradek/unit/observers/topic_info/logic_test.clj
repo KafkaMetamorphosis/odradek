@@ -1,6 +1,7 @@
 (ns odradek.unit.observers.topic-info.logic-test
   (:require [clojure.test :refer [deftest is testing]]
-            [odradek.observers.topic-info.logic :as topic-info-logic])
+            [odradek.observers.topic-info.logic :as topic-info-logic]
+            [odradek.observers.topic-info.config-keys :as config-keys])
   (:import [org.apache.kafka.common Node]
            [org.apache.kafka.common TopicPartitionInfo]
            [org.apache.kafka.clients.admin TopicDescription Config ConfigEntry]))
@@ -31,12 +32,37 @@
                    entries-map))))
 
 (def ^:private all-config-entries
-  {"min.insync.replicas" "2"
-   "retention.ms"        "604800000"
-   "retention.bytes"     "-1"
-   "cleanup.policy"      "delete"
-   "max.message.bytes"   "1048576"
-   "compression.type"    "producer"})
+  {"cleanup.policy"                       "delete"
+   "compression.type"                     "producer"
+   "delete.retention.ms"                  "86400000"
+   "file.delete.delay.ms"                 "60000"
+   "flush.messages"                       "9223372036854775807"
+   "flush.ms"                             "9223372036854775807"
+   "follower.replication.throttled.replicas" ""
+   "index.interval.bytes"                 "4096"
+   "leader.replication.throttled.replicas"   ""
+   "local.retention.bytes"                "-2"
+   "local.retention.ms"                   "-2"
+   "max.compaction.lag.ms"                "9223372036854775807"
+   "max.message.bytes"                    "1048588"
+   "message.downconversion.enable"        "true"
+   "message.format.version"               "3.0-IV1"
+   "message.timestamp.after.max.ms"       "9223372036854775807"
+   "message.timestamp.before.max.ms"      "9223372036854775807"
+   "message.timestamp.difference.max.ms"  "9223372036854775807"
+   "message.timestamp.type"               "CreateTime"
+   "min.cleanable.dirty.ratio"            "0.5"
+   "min.compaction.lag.ms"                "0"
+   "min.insync.replicas"                  "1"
+   "preallocate"                          "false"
+   "remote.storage.enable"                "false"
+   "retention.bytes"                      "-1"
+   "retention.ms"                         "604800000"
+   "segment.bytes"                        "1073741824"
+   "segment.index.bytes"                  "10485760"
+   "segment.jitter.ms"                    "0"
+   "segment.ms"                           "604800000"
+   "unclean.leader.election.enable"       "false"})
 
 ;; ---------------------------------------------------------------------------
 ;; topic-description->label-map — single partition
@@ -124,7 +150,7 @@
           label-map   (topic-info-logic/build-label-values "prod-cluster" "my-topic" description config)
           sanitized-config-keys (map (fn [k]
                                        (keyword (clojure.string/replace k #"[\.\-]" "_")))
-                                     topic-info-logic/exposed-topic-config-keys)]
+                                     config-keys/exposed-topic-config-keys)]
       (is (= "prod-cluster" (:cluster_name label-map)))
       (is (= "my-topic" (:topic label-map)))
       (is (= "1" (:partitions label-map)))
@@ -133,11 +159,40 @@
       (doseq [sanitized-key sanitized-config-keys]
         (is (contains? label-map sanitized-key)
             (str "label-map must contain key " sanitized-key)))
-      ;; Keys present in the config return their value; absent keys return empty string
-      (is (= "2" (:min_insync_replicas label-map)))
-      (is (= "delete" (:cleanup_policy label-map)))
-      (is (= "producer" (:compression_type label-map)))
-      (is (= "" (:delete_retention_ms label-map))
+      ;; Per-key value assertions for all 31 exposed config keys
+      (is (= "delete"                  (:cleanup_policy label-map)))
+      (is (= "producer"                (:compression_type label-map)))
+      (is (= "86400000"                (:delete_retention_ms label-map)))
+      (is (= "60000"                   (:file_delete_delay_ms label-map)))
+      (is (= "9223372036854775807"     (:flush_messages label-map)))
+      (is (= "9223372036854775807"     (:flush_ms label-map)))
+      (is (= ""                        (:follower_replication_throttled_replicas label-map)))
+      (is (= "4096"                    (:index_interval_bytes label-map)))
+      (is (= ""                        (:leader_replication_throttled_replicas label-map)))
+      (is (= "-2"                      (:local_retention_bytes label-map)))
+      (is (= "-2"                      (:local_retention_ms label-map)))
+      (is (= "9223372036854775807"     (:max_compaction_lag_ms label-map)))
+      (is (= "1048588"                 (:max_message_bytes label-map)))
+      (is (= "true"                    (:message_downconversion_enable label-map)))
+      (is (= "3.0-IV1"                 (:message_format_version label-map)))
+      (is (= "9223372036854775807"     (:message_timestamp_after_max_ms label-map)))
+      (is (= "9223372036854775807"     (:message_timestamp_before_max_ms label-map)))
+      (is (= "9223372036854775807"     (:message_timestamp_difference_max_ms label-map)))
+      (is (= "CreateTime"              (:message_timestamp_type label-map)))
+      (is (= "0.5"                     (:min_cleanable_dirty_ratio label-map)))
+      (is (= "0"                       (:min_compaction_lag_ms label-map)))
+      (is (= "1"                       (:min_insync_replicas label-map)))
+      (is (= "false"                   (:preallocate label-map)))
+      (is (= "false"                   (:remote_storage_enable label-map)))
+      (is (= "-1"                      (:retention_bytes label-map)))
+      (is (= "604800000"               (:retention_ms label-map)))
+      (is (= "1073741824"              (:segment_bytes label-map)))
+      (is (= "10485760"                (:segment_index_bytes label-map)))
+      (is (= "0"                       (:segment_jitter_ms label-map)))
+      (is (= "604800000"               (:segment_ms label-map)))
+      (is (= "false"                   (:unclean_leader_election_enable label-map)))
+      ;; Keys absent from the Config object return empty string
+      (is (= "" (get label-map :nonexistent_custom_key ""))
           "config key absent from Config object must map to empty string"))))
 
 ;; ---------------------------------------------------------------------------
@@ -153,7 +208,7 @@
 (def ^:private expected-label-name-order
   (vec (concat default-label-names
                (map (fn [k] (clojure.string/replace k #"[\.\-]" "_"))
-                    topic-info-logic/exposed-topic-config-keys))))
+                    config-keys/exposed-topic-config-keys))))
 
 (deftest label-ordering-matches-registry-label-names
   (testing "values extracted in set-topic-config! order produce the correct positional array"
@@ -170,7 +225,7 @@
       (doseq [label-name expected-label-name-order]
         (is (contains? label-map (keyword label-name))
             (str "label-map must contain key :" label-name)))
-      ;; Guard 2: exactly the right number of labels (8 default + 33 config keys = 41)
+      ;; Guard 2: exactly the right number of labels (8 default + 31 config keys = 39)
       (is (= (count expected-label-name-order) (count label-map))
           (str "label-map must have exactly " (count expected-label-name-order) " keys matching topic-config-label-names"))
       ;; Guard 3: positional values are strings (empty string is allowed for absent config keys)

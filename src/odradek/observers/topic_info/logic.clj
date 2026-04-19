@@ -1,19 +1,6 @@
 (ns odradek.observers.topic-info.logic
-  (:require [clojure.string :as string]))
-
-
-(def exposed-topic-config-keys
-  ["cleanup.policy" "compression.type" "delete.retention.ms" "file.delete.delay.ms"
-   "flush.messages" "flush.ms" "follower.replication.throttled.replicas"
-   "index.interval.bytes" "leader.replication.throttled.replicas"
-   "local.retention.bytes" "local.retention.ms" "max.compaction.lag.ms"
-   "max.message.bytes" "message.downconversion.enable" "message.format.version"
-   "message.timestamp.after.max.ms" "message.timestamp.before.max.ms"
-   "message.timestamp.difference.max.ms" "message.timestamp.type"
-   "min.cleanable.dirty.ratio" "min.compaction.lag.ms" "min.insync.replicas"
-   "preallocate" "remote.storage.enable" "retention.bytes" "retention.ms"
-   "segment.bytes" "segment.index.bytes" "segment.jitter.ms" "segment.ms"
-   "unclean.leader.election.enable"])
+  (:require [clojure.string :as string]
+            [odradek.observers.topic-info.config-keys :as config-keys]))
 
 
 (defn build-partitions-broker-ids [topic-description]
@@ -62,9 +49,9 @@
     (map (fn [config-key]
            (let [config-entry (.get config config-key)
                  label-key    (keyword (string/replace config-key #"[\.\-]" "_"))
-                 label-value  (if (some? config-entry) (.value config-entry) "")]
+                 label-value  (if (some? config-entry) (or (.value config-entry) "") "")]
              [label-key label-value]))
-         exposed-topic-config-keys)))
+         config-keys/exposed-topic-config-keys)))
 
 (defn build-label-values
   "Combines cluster name, topic, topic description, and config into the full
