@@ -35,7 +35,7 @@
    "5MB-MESSAGES-SMALL-TOPIC" 128})
 
 (def ^:private replication-factor (short 1))
-(def ^:private topic-retention-ms "900000")
+(def ^:private topic-retention-ms "300000")
 (def ^:private topic-retention-bytes "52428800")
 (def ^:private random-topic-partition-options [1 2 3])
 (def ^:private random-topic-count 800)

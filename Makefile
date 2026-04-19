@@ -1,4 +1,4 @@
-.PHONY: run-deps stop-deps unit integration test run seed
+.PHONY: run-deps stop-deps prune-deps unit integration test run seed
 
 LOCAL_SERVICES := kafka-1 kafka-2 kafka-3
 
@@ -20,6 +20,9 @@ run-deps:
 
 stop-deps:
 	docker-compose -f docker-compose.local.yml down
+
+prune-deps:
+	docker-compose -f docker-compose.local.yml down -v
 
 unit:
 	lein test :odradek.unit
