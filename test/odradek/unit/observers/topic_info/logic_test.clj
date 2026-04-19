@@ -39,67 +39,6 @@
    "compression.type"    "producer"})
 
 ;; ---------------------------------------------------------------------------
-;; classify-observe-configs
-;; ---------------------------------------------------------------------------
-
-(deftest classify-observe-configs-all-numeric
-  (testing "all known numeric keys are classified as numeric, none as string"
-    (let [classification (topic-info-logic/classify-observe-configs
-                           ["retention.ms" "retention.bytes" "min.insync.replicas" "max.message.bytes"])]
-      (is (= #{"retention.ms" "retention.bytes" "min.insync.replicas" "max.message.bytes"}
-             (set (:numeric classification))))
-      (is (empty? (:string classification))))))
-
-(deftest classify-observe-configs-all-string
-  (testing "unknown config keys are classified as string, none as numeric"
-    (let [classification (topic-info-logic/classify-observe-configs
-                           ["cleanup.policy" "compression.type"])]
-      (is (empty? (:numeric classification)))
-      (is (= #{"cleanup.policy" "compression.type"}
-             (set (:string classification)))))))
-
-(deftest classify-observe-configs-mixed
-  (testing "mixed list splits into correct numeric and string categories"
-    (let [classification (topic-info-logic/classify-observe-configs
-                           ["retention.ms" "cleanup.policy" "retention.bytes" "compression.type"])]
-      (is (= #{"retention.ms" "retention.bytes"}
-             (set (:numeric classification))))
-      (is (= #{"cleanup.policy" "compression.type"}
-             (set (:string classification)))))))
-
-(deftest classify-observe-configs-empty
-  (testing "empty list produces empty numeric and string vectors"
-    (let [classification (topic-info-logic/classify-observe-configs [])]
-      (is (empty? (:numeric classification)))
-      (is (empty? (:string classification))))))
-
-;; ---------------------------------------------------------------------------
-;; config->label-map — dynamic string config extraction
-;; ---------------------------------------------------------------------------
-
-(deftest config->label-map-returns-only-requested-string-keys
-  (testing "only the requested string-observe-configs appear in the label map"
-    (let [config    (make-config all-config-entries)
-          label-map (topic-info-logic/config->label-map config ["cleanup.policy" "compression.type"])]
-      (is (= {:cleanup_policy "delete"
-              :compression_type "producer"}
-             label-map)))))
-
-(deftest config->label-map-absent-key-returns-empty-string
-  (testing "a config key not present in the Config object maps to empty string"
-    (let [config    (make-config {"cleanup.policy" "delete"})
-          label-map (topic-info-logic/config->label-map config ["cleanup.policy" "compression.type"])]
-      (is (= {:cleanup_policy   "delete"
-              :compression_type ""}
-             label-map)))))
-
-(deftest config->label-map-no-string-keys-returns-empty-map
-  (testing "an empty string-observe-configs list returns an empty map"
-    (let [config    (make-config all-config-entries)
-          label-map (topic-info-logic/config->label-map config [])]
-      (is (= {} label-map)))))
-
-;; ---------------------------------------------------------------------------
 ;; topic-description->label-map — single partition
 ;; ---------------------------------------------------------------------------
 
@@ -173,35 +112,48 @@
       (is (= "0:1,2;1:2" (topic-info-logic/build-partitions-broker-ids description))))))
 
 ;; ---------------------------------------------------------------------------
-;; build-label-values — full assembly
+;; build-label-values — full assembly with all exposed-topic-config-keys
 ;; ---------------------------------------------------------------------------
 
 (deftest build-label-values-assembles-all-keys
-  (testing "merges cluster_name, topic, description labels, and all legacy config labels"
+  (testing "result contains cluster_name, topic, description labels, and all exposed-topic-config-keys as sanitized labels"
     (let [node-1      (make-node 1 "rack-a")
           partition   (make-partition 0 node-1 [node-1] [node-1])
           description (make-topic-description "my-topic" [partition])
           config      (make-config all-config-entries)
-          label-map   (topic-info-logic/build-label-values "prod-cluster" "my-topic" description config)]
+          label-map   (topic-info-logic/build-label-values "prod-cluster" "my-topic" description config)
+          sanitized-config-keys (map (fn [k]
+                                       (keyword (clojure.string/replace k #"[\.\-]" "_")))
+                                     topic-info-logic/exposed-topic-config-keys)]
       (is (= "prod-cluster" (:cluster_name label-map)))
       (is (= "my-topic" (:topic label-map)))
       (is (= "1" (:partitions label-map)))
       (is (= "1" (:replication_factor label-map)))
+      ;; All exposed-topic-config-keys must appear as sanitized keyword keys
+      (doseq [sanitized-key sanitized-config-keys]
+        (is (contains? label-map sanitized-key)
+            (str "label-map must contain key " sanitized-key)))
+      ;; Keys present in the config return their value; absent keys return empty string
       (is (= "2" (:min_insync_replicas label-map)))
       (is (= "delete" (:cleanup_policy label-map)))
-      (is (= "producer" (:compression_type label-map))))))
+      (is (= "producer" (:compression_type label-map)))
+      (is (= "" (:delete_retention_ms label-map))
+          "config key absent from Config object must map to empty string"))))
 
 ;; ---------------------------------------------------------------------------
 ;; Label ordering guard: build-label-values keys must match
 ;; topic-config-label-names order used by set-topic-config!
 ;; ---------------------------------------------------------------------------
 
-(def ^:private expected-label-name-order
+(def ^:private default-label-names
   ["cluster_name" "topic" "partitions" "replication_factor"
    "partitions_replicas_broker_ids" "partitions_isr_broker_ids"
-   "partitions_leader_broker_ids" "partitions_replicas_broker_racks"
-   "min_insync_replicas" "retention_ms" "retention_bytes"
-   "cleanup_policy" "max_message_bytes" "compression_type"])
+   "partitions_leader_broker_ids" "partitions_replicas_broker_racks"])
+
+(def ^:private expected-label-name-order
+  (vec (concat default-label-names
+               (map (fn [k] (clojure.string/replace k #"[\.\-]" "_"))
+                    topic-info-logic/exposed-topic-config-keys))))
 
 (deftest label-ordering-matches-registry-label-names
   (testing "values extracted in set-topic-config! order produce the correct positional array"
@@ -211,42 +163,26 @@
           description (make-topic-description "ordering-topic" [partition])
           config      (make-config all-config-entries)
           label-map   (topic-info-logic/build-label-values "my-cluster" "ordering-topic" description config)
-          ;; This is the exact extraction order used in registry/set-topic-config!
-          positional-values (mapv str [(:cluster_name label-map)
-                                       (:topic label-map)
-                                       (:partitions label-map)
-                                       (:replication_factor label-map)
-                                       (:partitions_replicas_broker_ids label-map)
-                                       (:partitions_isr_broker_ids label-map)
-                                       (:partitions_leader_broker_ids label-map)
-                                       (:partitions_replicas_broker_racks label-map)
-                                       (:min_insync_replicas label-map)
-                                       (:retention_ms label-map)
-                                       (:retention_bytes label-map)
-                                       (:cleanup_policy label-map)
-                                       (:max_message_bytes label-map)
-                                       (:compression_type label-map)])]
+          positional-values (mapv (fn [label-name]
+                                    (str (get label-map (keyword label-name) "")))
+                                  expected-label-name-order)]
       ;; Guard 1: every label name has a corresponding key in the map
       (doseq [label-name expected-label-name-order]
         (is (contains? label-map (keyword label-name))
             (str "label-map must contain key :" label-name)))
-      ;; Guard 2: no extra keys snuck in (exactly 14 labels)
+      ;; Guard 2: exactly the right number of labels (8 default + 33 config keys = 41)
       (is (= (count expected-label-name-order) (count label-map))
-          "label-map must have exactly 14 keys matching topic-config-label-names")
-      ;; Guard 3: positional values are non-nil strings
+          (str "label-map must have exactly " (count expected-label-name-order) " keys matching topic-config-label-names"))
+      ;; Guard 3: positional values are strings (empty string is allowed for absent config keys)
       (doseq [[index value] (map-indexed vector positional-values)]
         (is (string? value)
-            (str "position " index " (" (nth expected-label-name-order index) ") must be a string"))
-        (is (seq value)
-            (str "position " index " (" (nth expected-label-name-order index) ") must be non-empty")))
+            (str "position " index " (" (nth expected-label-name-order index) ") must be a string")))
       ;; Guard 4: spot-check specific positions
       (is (= "my-cluster" (nth positional-values 0)))
       (is (= "ordering-topic" (nth positional-values 1)))
       (is (= "1" (nth positional-values 2)))
       (is (= "2" (nth positional-values 3)))
-      (is (= "0:5,6" (nth positional-values 4)))
-      (is (= "2" (nth positional-values 8)))
-      (is (= "producer" (nth positional-values 13))))))
+      (is (= "0:5,6" (nth positional-values 4))))))
 
 ;; ---------------------------------------------------------------------------
 ;; extract-partition-count
@@ -302,25 +238,3 @@
           partition   (make-partition 0 node-1 [node-1 node-2] [node-1])
           description (make-topic-description "under-replicated" [partition])]
       (is (= 1 (topic-info-logic/extract-min-isr-proxy description))))))
-
-;; ---------------------------------------------------------------------------
-;; extract-numeric-config-value
-;; ---------------------------------------------------------------------------
-
-(deftest extract-numeric-config-value-present-key-returns-parsed-long
-  (testing "standard 7-day retention.ms parses to long"
-    (let [config (make-config {"retention.ms" "604800000"})]
-      (is (= 604800000 (topic-info-logic/extract-numeric-config-value config "retention.ms")))))
-  (testing "-1 retention.bytes (unlimited) parses to -1"
-    (let [config (make-config {"retention.bytes" "-1"})]
-      (is (= -1 (topic-info-logic/extract-numeric-config-value config "retention.bytes"))))))
-
-(deftest extract-numeric-config-value-absent-key-returns-minus-one
-  (testing "key not present in Config returns -1"
-    (let [config (make-config {})]
-      (is (= -1 (topic-info-logic/extract-numeric-config-value config "retention.ms"))))))
-
-(deftest extract-numeric-config-value-non-parseable-value-returns-minus-one
-  (testing "non-numeric config value returns -1"
-    (let [config (make-config {"retention.ms" "not-a-number"})]
-      (is (= -1 (topic-info-logic/extract-numeric-config-value config "retention.ms"))))))

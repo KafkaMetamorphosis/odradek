@@ -1,7 +1,8 @@
 (ns odradek.metrics.registry
   (:require [com.stuartsierra.component :as component]
             [clojure.string :as str]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [odradek.observers.topic-info.logic :as topic-info-logic])
   (:import [io.prometheus.metrics.core.metrics Counter Gauge Histogram]
            [io.prometheus.metrics.model.registry PrometheusRegistry]
            [io.prometheus.metrics.expositionformats ExpositionFormats]
@@ -93,28 +94,20 @@
       (.classicUpperBounds buckets)
       (.register registry)))
 
-(defn- find-topic-info-observer
-  "Returns the first observer map with observer-type 'topic-info', or nil."
-  [observers]
-  (first (filter #(= "topic-info" (:observer-type %)) observers)))
+(def ^:private topic-config-label-names
+  "Full String array of label names for the topic-config gauge.
+   Combines the default structural labels with the sanitized names of all
+   exposed-topic-config-keys. Computed once at load time."
+  (into-array String
+    (concat default-topic-config-label-names
+            (map sanitize-label-name topic-info-logic/exposed-topic-config-keys))))
 
-(defn- topic-info-labels [topic-info-observer]
-  (let [default-label-set    (set default-topic-config-label-names)
-        observe-config-names (->> (:observe-configs topic-info-observer)
-                                  (map sanitize-label-name)
-                                  (remove default-label-set))]
-    (into-array String (concat default-topic-config-label-names observe-config-names))))
-
-(defn- topic-info-ordered-label-names
-  "Returns an ordered vector of all label name strings for the topic-config gauge,
-   matching the registration order used in topic-info-labels.
-   Used by set-topic-config! to build the positional values array."
-  [topic-info-observer]
-  (let [default-label-set    (set default-topic-config-label-names)
-        observe-config-names (->> (:observe-configs topic-info-observer)
-                                  (map sanitize-label-name)
-                                  (remove default-label-set))]
-    (vec (concat default-topic-config-label-names observe-config-names))))
+(def ^:private topic-config-ordered-label-names
+  "Ordered vector of all label name strings for the topic-config gauge,
+   matching topic-config-label-names. Used by set-topic-config! to build
+   the positional values array."
+  (vec (concat default-topic-config-label-names
+               (map sanitize-label-name topic-info-logic/exposed-topic-config-keys))))
 
 
 (defrecord MetricsRegistryComponent [config registry metrics custom-label-keys]
@@ -124,24 +117,23 @@
     (let [observers                (get-in config [:config :observers])
           union-custom-label-keys  (compute-union-custom-label-keys observers)
           merged-labels            (build-merged-label-names-array union-custom-label-keys)
-          topic-info-observer      (find-topic-info-observer observers)
-          reg                      (PrometheusRegistry.) 
+          reg                      (PrometheusRegistry.)
           metrics                  {;;producer observer
                                     :produced-total              (register-counter   reg "kafka_odradek_messages_produced_total"                    "Total messages produced"                                         merged-labels)
                                     :production-error-total      (register-counter   reg "kafka_odradek_messages_production_error_total"            "Total production errors"                                         merged-labels)
                                     :production-latency          (register-histogram reg "kafka_odradek_messages_production_latency_ms"             "Production ack latency ms"                                       merged-labels histogram-buckets)
-                                   
-                                   
+
+
                                     ;;consumer observer
                                     :fetched-total               (register-counter   reg "kafka_odradek_messages_fetched_total"                     "Total messages fetched"                                          merged-labels)
                                     :fetch-error-total           (register-counter   reg "kafka_odradek_messages_fetch_error_total"                 "Total fetch errors"                                              merged-labels)
                                     :fetch-latency               (register-histogram reg "kafka_odradek_messages_fetch_latency_ms"                  "Message fetch latency ms"                                        merged-labels histogram-buckets)
                                     :e2e-message-age             (register-histogram reg "kafka_odradek_e2e_message_age_ms"                         "Message age at fetch (pre-commit)"                               merged-labels histogram-buckets)
                                     :full-e2e                    (register-histogram reg "kafka_odradek_full_e2e_ms"                                "Full produce-to-commit latency ms"                               merged-labels histogram-buckets)
-                                   
+
                                     ;; topic info metric
-                                    :topic-config                   (register-gauge     reg "kafka_odradek_topic_config"                            "Effective topic configuration from Kafka AdminClient"            (topic-info-labels topic-info-observer))
-                                   
+                                    :topic-config                   (register-gauge     reg "kafka_odradek_topic_config"                            "Effective topic configuration from Kafka AdminClient"            topic-config-label-names)
+
                                     ;; Topic-info scrape process metrics (per cluster)
                                     :topic-scrape-duration          (register-histogram reg "kafka_odradek_topic_scrape_duration_seconds"           "Time for the full topic scrape cycle per cluster (seconds)"      topic-info-cluster-label-names       topic-scrape-histogram-buckets)
                                     :topic-list-duration            (register-histogram reg "kafka_odradek_topic_list_duration_seconds"             "Time to list all topics per cluster (seconds)"                   topic-info-cluster-label-names       topic-scrape-histogram-buckets)
@@ -153,7 +145,7 @@
              :metrics                     metrics
              :merged-labels               merged-labels
              :custom-label-keys           union-custom-label-keys
-             :topic-config-label-names    (topic-info-ordered-label-names topic-info-observer))))
+             :topic-config-label-names    topic-config-ordered-label-names)))
   (stop [this]
     (assoc this
            :registry                 nil
